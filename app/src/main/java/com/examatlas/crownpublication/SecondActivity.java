@@ -13,14 +13,13 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.button.MaterialButton;
 
 public class SecondActivity extends AppCompatActivity {
-    MaterialButton userNextBtn,adminNextBtn;
+    MaterialButton userNextBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_second);
         userNextBtn = findViewById(R.id.userNextBtn);
-        adminNextBtn = findViewById(R.id.adminNextBtn);
 
         userNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
