@@ -1,8 +1,16 @@
 package com.examatlas.crownpublication;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,7 +22,6 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.crownpublication.Adapter.extraAdapter.BookOrderSummaryItemsDetailsRecyclerViewAdapter;
 import com.examatlas.crownpublication.Models.extraModels.BookOrderSummaryItemsDetailsRecyclerViewModel;
@@ -43,12 +50,17 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
     RecyclerView bookItemsSummaryRecyclerView;
     BookOrderSummaryItemsDetailsRecyclerViewModel bookOrderSummaryItemsDetailsRecyclerViewModel;
     BookOrderSummaryItemsDetailsRecyclerViewAdapter bookOrderSummaryItemsDetailsRecyclerViewAdapter;
-    TextView orderIdTxt,totalAmountTxt,statusTxt,paymentMethodTxt,nameTxt,shippingToTxt;
-
+    TextView referenceNoTxt,orderIdTxt,totalAmountTxt,statusTxt,paymentMethodTxt,nameTxt,shippingToTxt;
+    ImageView backImgBtn,copyImgBtn;
+    Button backToHomeBtn;
+    RelativeLayout mainLayout;
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_order_payment);
+        mainLayout = findViewById(R.id.mainLayout);
+        progressBar = findViewById(R.id.progressBar);
 
         Checkout.preload(getApplicationContext());
         Checkout checkout = new Checkout();
@@ -58,6 +70,11 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
         bookItemsSummaryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         bookOrderSummaryItemsDetailsRecyclerViewModelArrayList = new ArrayList<>();
 
+        backImgBtn = findViewById(R.id.backImgBtn);
+        copyImgBtn = findViewById(R.id.copyImgBtn);
+        backToHomeBtn = findViewById(R.id.backToHomeBtn);
+
+        referenceNoTxt = findViewById(R.id.referenceNoTxt);
         orderIdTxt = findViewById(R.id.orderIdTxt);
         totalAmountTxt = findViewById(R.id.priceTxt);
         statusTxt = findViewById(R.id.paidTxt);
@@ -96,6 +113,35 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
 
         } catch(Exception e) {
         }
+
+        copyImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) BookOrderPaymentActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Order ID", orderId);
+                clipboard.setPrimaryClip(clip);
+
+                Toast.makeText(BookOrderPaymentActivity.this, "Copied to clipboard: " + orderId, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        backImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(BookOrderPaymentActivity.this, DashboardActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        backToHomeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(BookOrderPaymentActivity.this, DashboardActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
     }
     @Override
     public void onPaymentSuccess(String razorpayPaymentID, PaymentData paymentData) {
@@ -189,8 +235,11 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
 
                                 orderID = "Order ID: " + orderID;
 
+                                referenceNoTxt.setText(orderID);
                                 orderIdTxt.setText(orderID);
+
                                 totalAmountTxt.setText("₹ " +totalAmount);
+
                                 statusTxt.setText(paymentStatus);
                                 if (paymentStatus.equalsIgnoreCase("paid")){
                                     statusTxt.setTextColor(getResources().getColor(R.color.green));
@@ -229,9 +278,15 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                                     bookOrderSummaryItemsDetailsRecyclerViewModel = new BookOrderSummaryItemsDetailsRecyclerViewModel(itemName,itemPrice,itemQuantity);
                                     bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.add(bookOrderSummaryItemsDetailsRecyclerViewModel);
                                 }
-                                bookOrderSummaryItemsDetailsRecyclerViewAdapter = new BookOrderSummaryItemsDetailsRecyclerViewAdapter(BookOrderPaymentActivity.this,bookOrderSummaryItemsDetailsRecyclerViewModelArrayList);
-                                bookItemsSummaryRecyclerView.setAdapter(bookOrderSummaryItemsDetailsRecyclerViewAdapter);
-
+                                if (!bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.isEmpty()) {
+                                    mainLayout.setVisibility(View.VISIBLE);
+                                    progressBar.setVisibility(View.GONE);
+                                    bookOrderSummaryItemsDetailsRecyclerViewAdapter = new BookOrderSummaryItemsDetailsRecyclerViewAdapter(BookOrderPaymentActivity.this, bookOrderSummaryItemsDetailsRecyclerViewModelArrayList);
+                                    bookItemsSummaryRecyclerView.setAdapter(bookOrderSummaryItemsDetailsRecyclerViewAdapter);
+                                }else {
+                                    mainLayout.setVisibility(View.GONE);
+                                    progressBar.setVisibility(View.VISIBLE);
+                                }
                             } else {
                                 // Handle the case where success is not true
                                 Toast.makeText(BookOrderPaymentActivity.this, "Order retrieval failed", Toast.LENGTH_SHORT).show();
@@ -268,9 +323,6 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                 return headers;
             }
         };
-
-        // Add request to the queue
         MySingleton.getInstance(BookOrderPaymentActivity.this).addToRequestQueue(jsonObjectRequest);
     }
-
 }

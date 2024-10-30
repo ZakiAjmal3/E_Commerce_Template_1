@@ -8,9 +8,23 @@
     tools:context=".BookOrderPaymentActivity">
     <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="400dp"
+            android:indeterminateTint="@color/md_theme_dark_errorContainer"
+            />
+
+    <RelativeLayout
+        android:id="@+id/mainLayout"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:visibility="visible">
+        android:visibility="gone">
         <RelativeLayout
             android:id="@+id/topBar"
             android:layout_width="match_parent"
@@ -25,7 +39,7 @@
                 app:strokeWidth="0dp" />
 
             <ImageView
-                android:id="@+id/backBtn"
+                android:id="@+id/backImgBtn"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_centerVertical="true"
@@ -41,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/backBtn"
+                android:layout_toEndOf="@+id/backImgBtn"
                 android:text="Success"
                 android:textSize="20dp"
                 android:textColor="@color/white"
@@ -88,21 +102,23 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp">
+
                 <TextView
                     android:id="@+id/orderIdTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
                     android:text="Order ID: 334823498234348238483"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:id="@+id/copyImgBtn"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/ic_copy"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginLeft="5dp"
+                    android:padding="5dp"
                     android:foreground="?android:attr/selectableItemBackgroundBorderless"/>
             </LinearLayout>
             <LinearLayout
@@ -120,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:text="Total Amount:"
                     android:textStyle="bold"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:layout_weight="1.3"
                     android:textColor="@color/black"
                     />
@@ -129,7 +145,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="1234"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:layout_weight="0.7"
                     android:gravity="end"
                     android:textColor="@color/black"
@@ -152,7 +168,7 @@
                     android:layout_height="wrap_content"
                     android:text="Status:"
                     android:textStyle="bold"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:layout_weight="1.3"
                     android:textColor="@color/black"
                     />
@@ -161,7 +177,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Paid"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:layout_weight="0.7"
                     android:gravity="end"
                     android:textColor="@color/black"
@@ -183,7 +199,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Payment Method:"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
                     android:layout_weight="1.3"
                     android:textColor="@color/black"
@@ -193,7 +209,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="RazorPay"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:layout_weight="0.7"
                     android:gravity="end"
                     android:textColor="@color/black"
@@ -217,7 +233,7 @@
                 android:layout_height="wrap_content"
                 android:text="Shipping To:"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"/>
@@ -227,7 +243,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/shippingToTxt"
                 android:text="Name Text"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="15dp"/>
@@ -237,7 +253,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/nameTxt"
                 android:text="Name Text"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="5dp"
@@ -259,7 +275,7 @@
                 android:layout_height="wrap_content"
                 android:text="Items:"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:textColor="@color/black"/>
@@ -272,6 +288,7 @@
                 tools:listitem="@layout/book_order_summary_items_details_recyclerview_layout"/>
         </RelativeLayout>
         <Button
+            android:id="@+id/backToHomeBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/relativeLayout3"
@@ -282,5 +299,6 @@
             android:backgroundTint="@color/md_theme_dark_errorContainer"
             android:textColor="@color/white"
             android:layout_marginBottom="20dp"/>
+    </RelativeLayout>
     </RelativeLayout>
 </ScrollView>

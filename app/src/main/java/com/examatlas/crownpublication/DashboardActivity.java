@@ -22,8 +22,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -36,6 +36,8 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.examatlas.crownpublication.Adapter.DashboardAdapter;
+import com.examatlas.crownpublication.Adapter.DashboardExamCategoryAdapter;
+import com.examatlas.crownpublication.Models.DashboardExamCategoryModel;
 import com.examatlas.crownpublication.Models.DashboardModel;
 import com.examatlas.crownpublication.Models.extraModels.BookImageModels;
 import com.examatlas.crownpublication.Utils.Constant;
@@ -59,7 +61,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DashboardActivity extends AppCompatActivity {
     private ImageSlider slider;
-    RecyclerView allBooksRecyclerView;
+    RecyclerView allBooksRecyclerView,examCategoryRecyclerView;
+    DashboardExamCategoryModel dashboardExamCategoryModel;
+    DashboardExamCategoryAdapter dashboardExamCategoryAdapter;
+    ArrayList<DashboardExamCategoryModel> dashboardExamCategoryModelArrayList;
     DashboardModel dashboardModel;
     DashboardAdapter dashboardAdapter;
     ArrayList<DashboardModel> dashboardModelArrayList;
@@ -92,6 +97,10 @@ public class DashboardActivity extends AppCompatActivity {
         allBooksRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
         dashboardModelArrayList = new ArrayList<>();
 
+        examCategoryRecyclerView = findViewById(R.id.examCategory);
+        examCategoryRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+        dashboardExamCategoryModelArrayList = new ArrayList<>();
+
         sessionManager = new SessionManager(this);
         authToken = sessionManager.getUserData().get("authToken");
 
@@ -101,6 +110,7 @@ public class DashboardActivity extends AppCompatActivity {
         sliderArrayList.add(new SlideModel(R.drawable.image3, ScaleTypes.CENTER_CROP));
         slider.setImageList(sliderArrayList);
 
+        bottom_navigation.setSelectedItemId(R.id.home);
         bottom_navigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -116,11 +126,13 @@ public class DashboardActivity extends AppCompatActivity {
                 } else if (item.getItemId() == R.id.orderHistory) {
                     currentFrag = "ORDER";
                     topBar.setVisibility(View.VISIBLE);
-//                    loadFragment(new LiveCoursesFragment());
+                    Intent intent = new Intent(DashboardActivity.this, OrderHistoryActivity.class);
+                    startActivity(intent);
                 } else {
                     currentFrag = "PROFILE";
+                    Intent intent = new Intent(DashboardActivity.this, ProfileActivity.class);
+                    startActivity(intent);
                     topBar.setVisibility(View.GONE);
-//                    loadFragment(new ProfileFragment());
                 }
                 return true;
             }
@@ -132,36 +144,54 @@ public class DashboardActivity extends AppCompatActivity {
                 showDrawerDialog();
             }
         });
-
-//        // Handle back press
-//        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-//            @Override
-//            public void handleOnBackPressed() {
-//                if (!(currentFragment instanceof AllBooksFragment)) {
-//                    loadFragment(new AllBooksFragment());
-//                    bottom_navigation.setSelectedItemId(R.id.home);
-//                } else {
-//                    setEnabled(false); // Disable the callback for default back press behavior
-//                }
-//            }
-//        });
-
+        getExamNameCategory();
         getAllBooks();
-
     }
 
-//    public void loadFragment(Fragment fragment) {
-//        bottom_navigation.setEnabled(false);
-//        // Clear previous fragments if needed
-//        if (currentFragment != null && currentFragment != fragment) {
-//            getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
-//        }
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.container, fragment)
-//                .commit();
-//        currentFragment = fragment;
-//    }
+    private void getExamNameCategory() {
+        String examCategoryURL = Constant.BASE_URL + "exam/all";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, examCategoryURL, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String status = response.getString("success");
+                        } catch (JSONException e) {
+                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                // Parse the error response
+                                String jsonError = new String(error.networkResponse.data);
+                                JSONObject jsonObject = new JSONObject(jsonError);
+                                String message = jsonObject.optString("message", "Unknown error");
+                                // Now you can use the message
+                                Toast.makeText(DashboardActivity.this, message, Toast.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.e("BlogFetchError", errorMessage);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
+                return headers;
+            }
+        };
+
+        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
+
 
     private void getAllBooks() {
         String paginatedURL = bookURL + "?type=book&page=" + currentPage + "&per_page=" + itemsPerPage;
@@ -355,6 +385,17 @@ public class DashboardActivity extends AppCompatActivity {
                     bottom_navigation.setSelectedItemId(R.id.cart);
                     bottom_navigation.setSelected(true);
                 }
+                Intent intent = new Intent(DashboardActivity.this, CartViewActivity.class);
+                startActivity(intent);
+
+            }
+        });
+        layoutOrderHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, CartViewActivity.class);
+                startActivity(intent);
+                drawerDialog.dismiss();
             }
         });
 
@@ -423,5 +464,9 @@ public class DashboardActivity extends AppCompatActivity {
         } catch (Exception e) {
             //e.toString();
         }
+    }
+    protected void onResume() {
+        super.onResume();
+        bottom_navigation.setSelectedItemId(R.id.home);
     }
 }

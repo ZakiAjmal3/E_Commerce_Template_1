@@ -286,6 +286,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:indeterminateTint="@color/md_theme_dark_errorContainer"
+
         android:visibility="visible"/>
     <RelativeLayout
         android:id="@+id/bottomStickyRelativeLayout"

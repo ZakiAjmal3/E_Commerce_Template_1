@@ -126,11 +126,15 @@ public class CartViewActivity extends AppCompatActivity {
                 } else if (item.getItemId() == R.id.orderHistory) {
                     currentFrag = "ORDER";
                     topBar.setVisibility(View.VISIBLE);
-//                    loadFragment(new LiveCoursesFragment());
+                    Intent intent = new Intent(CartViewActivity.this, OrderHistoryActivity.class);
+                    startActivity(intent);
+                    finish();
                 } else {
                     currentFrag = "PROFILE";
+                    Intent intent = new Intent(CartViewActivity.this, ProfileActivity.class);
+                    startActivity(intent);
+                    finish();
                     topBar.setVisibility(View.GONE);
-//                    loadFragment(new ProfileFragment());
                 }
                 return true;
             }
@@ -351,6 +355,9 @@ public class CartViewActivity extends AppCompatActivity {
                     bottom_navigation.setSelectedItemId(R.id.home);
                     bottom_navigation.setSelected(true);
                 }
+                Intent intent = new Intent(CartViewActivity.this, DashboardActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
         layoutCart.setOnClickListener(new View.OnClickListener() {
@@ -359,13 +366,20 @@ public class CartViewActivity extends AppCompatActivity {
                 drawerDialog.dismiss();
                 if (!currentFrag.equals("CART")) {
                     currentFrag = "CART";
-//                    loadFragment(new CartViewFragment());
                     bottom_navigation.setSelectedItemId(R.id.cart);
                     bottom_navigation.setSelected(true);
                 }
             }
         });
-
+        layoutOrderHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CartViewActivity.this, OrderHistoryActivity.class);
+                startActivity(intent);
+                drawerDialog.dismiss();
+                finish();
+            }
+        });
         cardBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -432,5 +446,8 @@ public class CartViewActivity extends AppCompatActivity {
             //e.toString();
         }
     }
-
+    protected void onResume() {
+        super.onResume();
+        bottom_navigation.setSelectedItemId(R.id.cart);
+    }
 }
