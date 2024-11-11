@@ -216,7 +216,6 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
             Log.e("JSON_ERROR", "Error creating JSON: " + e.getMessage());
         }
     }
-
     private void getOrderDetails(String razorpayPaymentID, PaymentData paymentData) {
         String orderDetailsURL = "https://examatlas-backend.onrender.com/api/payment/getOneOrderByUserId/" + userID;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, orderDetailsURL, null,

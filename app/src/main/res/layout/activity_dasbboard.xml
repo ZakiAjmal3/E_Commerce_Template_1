@@ -91,7 +91,7 @@
                 android:textColor="@color/black"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
-                android:visibility="gone"/>
+                android:layout_marginBottom="10dp"/>
             <TextView
                 android:id="@+id/showAllNameTxt"
                 android:layout_width="wrap_content"
@@ -102,7 +102,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/seed"
                 android:layout_marginTop="5dp"
-                android:visibility="gone"/>
+                android:layout_marginBottom="10dp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/examCategory"
@@ -112,14 +112,14 @@
                 android:orientation="horizontal"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/booksRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/examCategory"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
 
             <RelativeLayout
                 android:id="@+id/noDataLayout"

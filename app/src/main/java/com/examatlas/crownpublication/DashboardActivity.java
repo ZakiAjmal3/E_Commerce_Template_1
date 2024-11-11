@@ -80,6 +80,7 @@ public class DashboardActivity extends AppCompatActivity {
     private int currentPage = 1;
     private int totalPages = 1;
     private final int itemsPerPage = 10;
+    private boolean isLoading = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +95,8 @@ public class DashboardActivity extends AppCompatActivity {
         noDataLayout = findViewById(R.id.noDataLayout);
         progressBar = findViewById(R.id.progressBar);
         allBooksRecyclerView = findViewById(R.id.booksRecycler);
-        allBooksRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2); // 2 is the number of columns
+        allBooksRecyclerView.setLayoutManager(gridLayoutManager);
         dashboardModelArrayList = new ArrayList<>();
 
         examCategoryRecyclerView = findViewById(R.id.examCategory);
@@ -144,54 +146,79 @@ public class DashboardActivity extends AppCompatActivity {
                 showDrawerDialog();
             }
         });
-//        getExamNameCategory();
-        getAllBooks();
+        getExamNameCategory();
+//        getAllBooks();
+        allBooksRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                // Get the GridLayoutManager and find the last visible item position
+                int lastVisibleItemPosition = gridLayoutManager.findLastVisibleItemPosition();
+                int totalItemCount = gridLayoutManager.getItemCount();
+
+                Log.d("ScrollListener", "Last visible item position: " + lastVisibleItemPosition + " Total items: " + totalItemCount);
+
+                // Check if we are at the bottom of the list
+                if (lastVisibleItemPosition + 1 >= totalItemCount && !isLoading) {
+                    // Check if there are more pages to load
+                    if (currentPage < totalPages) {
+                        currentPage++;  // Increment the current page
+                        getAllBooks();   // Fetch the next set of books
+                    }
+                }
+            }
+        });
+
     }
 
-//    private void getExamNameCategory() {
-//        String examCategoryURL = Constant.BASE_URL + "exam/all";
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, examCategoryURL, null,
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        try {
-//                            String status = response.getString("success");
-//                        } catch (JSONException e) {
-//                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        String errorMessage = "Error: " + error.toString();
-//                        if (error.networkResponse != null) {
-//                            try {
-//                                // Parse the error response
-//                                String jsonError = new String(error.networkResponse.data);
-//                                JSONObject jsonObject = new JSONObject(jsonError);
-//                                String message = jsonObject.optString("message", "Unknown error");
-//                                // Now you can use the message
-//                                Toast.makeText(DashboardActivity.this, message, Toast.LENGTH_LONG).show();
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                        Log.e("ExamListError", errorMessage);
-//                    }
-//                }) {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> headers = new HashMap<>();
-//                headers.put("Content-Type", "application/json");
-//                headers.put("Authorization", "Bearer " + authToken);
-//                return headers;
-//            }
-//        };
-//        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
-//    }
+    private void getExamNameCategory() {
+        String examCategoryURL = Constant.BASE_URL + "exam/all";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, examCategoryURL, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String status = response.getString("success");
+                            getAllBooks();
+                        } catch (JSONException e) {
+                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                // Parse the error response
+                                String jsonError = new String(error.networkResponse.data);
+                                JSONObject jsonObject = new JSONObject(jsonError);
+                                String message = jsonObject.optString("message", "Unknown error");
+                                // Now you can use the message
+                                Toast.makeText(DashboardActivity.this, message, Toast.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.e("ExamListError", errorMessage);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
+                    return headers;
+            }
+        };
+        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
 
     private void getAllBooks() {
+        if (isLoading) return;  // Prevent making requests if one is already in progress
+        isLoading = true;  // Set flag to true when the request is in progress
         String paginatedURL = bookURL + "?type=book&page=" + currentPage + "&per_page=" + itemsPerPage;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
                 new Response.Listener<JSONObject>() {
@@ -204,8 +231,6 @@ public class DashboardActivity extends AppCompatActivity {
 
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("books");
-                                dashboardModelArrayList.clear();
-
                                 // Parse books directly here
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
