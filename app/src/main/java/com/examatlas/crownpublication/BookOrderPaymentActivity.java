@@ -145,9 +145,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
     }
     @Override
     public void onPaymentSuccess(String razorpayPaymentID, PaymentData paymentData) {
-//        verifyPaymentStatus(razorpayPaymentID,paymentData);
-        getOrderDetails(razorpayPaymentID,paymentData);
-        Toast.makeText(this, "Payment SuccessFull", Toast.LENGTH_SHORT).show();
+        verifyPaymentStatus(razorpayPaymentID,paymentData);
     }
 
     @Override
@@ -165,6 +163,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
             jsonBody.put("razorpay_payment_id", razorpayPaymentID);
             jsonBody.put("razorpay_order_id", razorpayOrderID);
             jsonBody.put("razorpay_signature", paymentData.getSignature());
+            jsonBody.put("isApp", true);
 //            jsonBody.put("userId", sessionManager.getUserData().get("user_id"));
             // Add any other data needed for verification
 
@@ -174,9 +173,11 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                         public void onResponse(JSONObject response) {
                             Log.e("responseData", response.toString());
                             try {
-                                String success = response.getString("success");
-                                if (success.equals("true")) {
-//                                    getOrderDetails(razorpayPaymentID,paymentData);
+                                boolean success = response.getBoolean("success");
+                                if (success) {
+                                    String message = response.getString("message");
+                                    Toast.makeText(BookOrderPaymentActivity.this, message, Toast.LENGTH_SHORT).show();
+                                    getOrderDetails(razorpayPaymentID,paymentData);
                                 } else {
                                     // Handle failure case
                                 }

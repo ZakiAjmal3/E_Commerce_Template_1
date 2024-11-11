@@ -62,7 +62,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
     OrderHistoryModel orderHistoryModel;
     OrderHistoryAdapter orderHistoryAdapter;
     ArrayList<OrderHistoryModel> orderHistoryModelArrayList;
-    ArrayList<OrderItemsArrayListModel> orderItemsArrayListModelArrayList = new ArrayList<>();
+    ArrayList<OrderItemsArrayListModel> orderItemsArrayListModelArrayList;
     ProgressBar progressBar;
     TextView noDataTxt;
     @Override
@@ -294,7 +294,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
                                     String completeAddress = apartment + ", " + streetAddress + ", " + city + ", " + state + ", " + zipCode + ", " + country + ", " + phone + ", " + email + ".";
 
                                     JSONArray jsonArray2 = jsonObject1.getJSONArray("items");
-                                    orderItemsArrayListModelArrayList.clear();
+                                    orderItemsArrayListModelArrayList = new ArrayList<>();
                                     for (int j = 0; j < jsonArray2.length(); j++) {
                                         JSONObject jsonObject3 = jsonArray2.getJSONObject(j);
 

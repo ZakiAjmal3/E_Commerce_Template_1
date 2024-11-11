@@ -144,54 +144,52 @@ public class DashboardActivity extends AppCompatActivity {
                 showDrawerDialog();
             }
         });
-        getExamNameCategory();
+//        getExamNameCategory();
         getAllBooks();
     }
 
-    private void getExamNameCategory() {
-        String examCategoryURL = Constant.BASE_URL + "exam/all";
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, examCategoryURL, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            String status = response.getString("success");
-                        } catch (JSONException e) {
-                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String errorMessage = "Error: " + error.toString();
-                        if (error.networkResponse != null) {
-                            try {
-                                // Parse the error response
-                                String jsonError = new String(error.networkResponse.data);
-                                JSONObject jsonObject = new JSONObject(jsonError);
-                                String message = jsonObject.optString("message", "Unknown error");
-                                // Now you can use the message
-                                Toast.makeText(DashboardActivity.this, message, Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        Log.e("BlogFetchError", errorMessage);
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + authToken);
-                return headers;
-            }
-        };
-
-        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
-    }
-
+//    private void getExamNameCategory() {
+//        String examCategoryURL = Constant.BASE_URL + "exam/all";
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, examCategoryURL, null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            String status = response.getString("success");
+//                        } catch (JSONException e) {
+//                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        String errorMessage = "Error: " + error.toString();
+//                        if (error.networkResponse != null) {
+//                            try {
+//                                // Parse the error response
+//                                String jsonError = new String(error.networkResponse.data);
+//                                JSONObject jsonObject = new JSONObject(jsonError);
+//                                String message = jsonObject.optString("message", "Unknown error");
+//                                // Now you can use the message
+//                                Toast.makeText(DashboardActivity.this, message, Toast.LENGTH_LONG).show();
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                        Log.e("ExamListError", errorMessage);
+//                    }
+//                }) {
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String, String> headers = new HashMap<>();
+//                headers.put("Content-Type", "application/json");
+//                headers.put("Authorization", "Bearer " + authToken);
+//                return headers;
+//            }
+//        };
+//        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+//    }
 
     private void getAllBooks() {
         String paginatedURL = bookURL + "?type=book&page=" + currentPage + "&per_page=" + itemsPerPage;

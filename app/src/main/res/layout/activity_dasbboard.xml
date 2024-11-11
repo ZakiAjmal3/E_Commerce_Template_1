@@ -6,7 +6,15 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".DashboardActivity">
-
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminateTint="@color/md_theme_dark_errorContainer"
+        android:visibility="visible"
+        />
     <RelativeLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -55,7 +63,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/slider_cardView"
                 android:layout_width="match_parent"
@@ -83,7 +90,8 @@
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                android:visibility="gone"/>
             <TextView
                 android:id="@+id/showAllNameTxt"
                 android:layout_width="wrap_content"
@@ -93,7 +101,8 @@
                 android:layout_toRightOf="@id/browseExamNameTxt"
                 android:textStyle="bold"
                 android:textColor="@color/seed"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                android:visibility="gone"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/examCategory"
@@ -102,22 +111,15 @@
                 android:layout_below="@id/browseExamNameTxt"
                 android:orientation="horizontal"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"/>
+                android:layout_marginRight="10dp"
+                android:visibility="gone"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/booksRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/examCategory" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:indeterminateTint="@color/md_theme_dark_errorContainer"
-                android:visibility="visible" />
+                android:layout_below="@id/examCategory"
+                android:visibility="gone"/>
 
             <RelativeLayout
                 android:id="@+id/noDataLayout"
