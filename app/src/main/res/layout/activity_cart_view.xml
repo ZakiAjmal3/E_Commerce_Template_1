@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/imgMenu"
-            android:text="CROWN"
+            android:text="CROWN PUBLICATIONS"
             android:textSize="20dp"
             android:textColor="@color/white"
             android:textAlignment="center"
@@ -287,13 +287,12 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:indeterminateTint="@color/md_theme_dark_errorContainer"
-
         android:visibility="visible"/>
     <RelativeLayout
         android:id="@+id/bottomStickyRelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/bottom_navigation"
+        android:layout_alignParentBottom="true"
         android:background="@drawable/rounded_corner_for_searchview"
         android:visibility="gone">
         <View
@@ -340,13 +339,4 @@
             android:background="@color/dark_grey"
             android:layout_below="@id/bottomStickyLinearLayout"/>
     </RelativeLayout>
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:itemBackground="@color/bottom_grey"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_menu"
-        android:elevation="10dp"/>
 </RelativeLayout>

@@ -52,7 +52,6 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OrderHistoryActivity extends AppCompatActivity {
-    public BottomNavigationView bottom_navigation;
     RelativeLayout topBar;
     ImageView imgMenu;
     public String currentFrag = "ORDER";
@@ -77,7 +76,6 @@ public class OrderHistoryActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         noDataTxt = findViewById(R.id.noDataTxt);
 
-        bottom_navigation = findViewById(R.id.bottom_navigation);
         topBar = findViewById(R.id.topBar);
         imgMenu = findViewById(R.id.imgMenu);
 
@@ -88,36 +86,6 @@ public class OrderHistoryActivity extends AppCompatActivity {
 
         fetchAllOrderHistory();
 
-        bottom_navigation.setSelectedItemId(R.id.orderHistory);
-        bottom_navigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if (item.getItemId() == R.id.home) {
-                    currentFrag = "HOME";
-                    Intent intent = new Intent(OrderHistoryActivity.this, DashboardActivity.class);
-                    startActivity(intent);
-                    finish();
-                    topBar.setVisibility(View.VISIBLE);
-                } else if (item.getItemId() == R.id.cart) {
-                    bottom_navigation.setLabelFor(R.id.cart);
-                    currentFrag = "CART";
-                    topBar.setVisibility(View.VISIBLE);
-                    Intent intent = new Intent(OrderHistoryActivity.this, CartViewActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else if (item.getItemId() == R.id.orderHistory) {
-                    currentFrag = "ORDER";
-                    topBar.setVisibility(View.VISIBLE);
-                } else {
-                    currentFrag = "PROFILE";
-                    Intent intent = new Intent(OrderHistoryActivity.this, ProfileActivity.class);
-                    startActivity(intent);
-                    finish();
-                    topBar.setVisibility(View.GONE);
-                }
-                return true;
-            }
-        });
         imgMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,7 +95,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
     }
 
     Dialog drawerDialog;
-    LinearLayout layoutHome, layoutCart, layoutOrderHistory, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy, layoutTerms;
+    LinearLayout layoutHome, layoutCart, layoutOrderHistory,layoutProfile, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy, layoutTerms;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
     MaterialCardView cardBack;
@@ -140,6 +108,8 @@ public class OrderHistoryActivity extends AppCompatActivity {
         layoutHome = drawerDialog.findViewById(R.id.layoutHome);
         layoutCart = drawerDialog.findViewById(R.id.layoutCart);
         layoutOrderHistory = drawerDialog.findViewById(R.id.layoutOrderHistory);
+        layoutProfile = drawerDialog.findViewById(R.id.layoutProfile);
+
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
         layoutShare = drawerDialog.findViewById(R.id.layoutShare);
         layoutAboutUs = drawerDialog.findViewById(R.id.layoutAboutUs);
@@ -157,37 +127,35 @@ public class OrderHistoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 drawerDialog.dismiss();
-                if (!currentFrag.equals("HOME")) {
-                    currentFrag = "HOME";
-//                    loadFragment(new AllBooksFragment());
-                    bottom_navigation.setSelectedItemId(R.id.home);
-                    bottom_navigation.setSelected(true);
-                    Intent intent = new Intent(OrderHistoryActivity.this, DashboardActivity.class);
-                    startActivity(intent);
-                    finish();
-
-                }
+                Intent intent = new Intent(OrderHistoryActivity.this, DashboardActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
         layoutCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 drawerDialog.dismiss();
-                if (!currentFrag.equals("CART")) {
-                    currentFrag = "CART";
-//                    loadFragment(new CartViewFragment());
-                    bottom_navigation.setSelectedItemId(R.id.cart);
-                    bottom_navigation.setSelected(true);
-                    Intent intent = new Intent(OrderHistoryActivity.this, CartViewActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
+                Intent intent = new Intent(OrderHistoryActivity.this, CartViewActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 
         layoutOrderHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                drawerDialog.dismiss();
+                Intent intent = new Intent(OrderHistoryActivity.this, OrderHistoryActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        layoutProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(OrderHistoryActivity.this, ProfileActivity.class);
+                startActivity(intent);
                 drawerDialog.dismiss();
             }
         });
@@ -365,9 +333,5 @@ public class OrderHistoryActivity extends AppCompatActivity {
             }
         };
         MySingleton.getInstance(OrderHistoryActivity.this).addToRequestQueue(jsonObjectRequest);
-    }
-    protected void onResume() {
-        super.onResume();
-        bottom_navigation.setSelectedItemId(R.id.orderHistory);
     }
 }

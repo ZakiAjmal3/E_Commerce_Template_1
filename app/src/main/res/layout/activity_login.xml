@@ -21,13 +21,15 @@
             android:layout_height="50dp"
             android:src="@drawable/ic_crown"
             android:layout_marginRight="10dp"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="CROWN"
+            android:textColor="@color/yellow"
             android:textSize="30sp"
             android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:layout_marginTop="7dp"/>
     </LinearLayout>
     <TextView
         android:layout_width="wrap_content"
@@ -53,7 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins"
-        android:text="Welcome To ExamAtlas"
+        android:text="Welcome To Crown Publications"
         android:textColor="@color/white" />
 
     <LinearLayout
@@ -132,7 +134,7 @@
             android:fontFamily="@font/poppins"
             android:padding="5dp"
             android:text="Forgot Password ?"
-            android:textColor="@color/seed"
+            android:textColor="@color/yellow"
             android:textStyle="bold" />
 
         <com.google.android.material.button.MaterialButton
@@ -177,7 +179,7 @@
                 android:fontFamily="@font/poppins"
                 android:padding="5dp"
                 android:text="Sign Up"
-                android:textColor="@color/seed"
+                android:textColor="@color/yellow"
                 android:textStyle="bold" />
 
         </LinearLayout>

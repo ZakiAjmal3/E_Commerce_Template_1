@@ -22,12 +22,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -68,7 +64,6 @@ public class CartViewActivity extends AppCompatActivity {
     ProgressBar progressBar;
     TextView priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
     Button goToCheckOutBTn;
-    public BottomNavigationView bottom_navigation;
     public String currentFrag = "CART";
     RelativeLayout topBar;
     ImageView imgMenu;
@@ -83,7 +78,6 @@ public class CartViewActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.cartProgress);
         goToCheckOutBTn = findViewById(R.id.gotoCheckOut);
 
-        bottom_navigation = findViewById(R.id.bottom_navigation);
         topBar = findViewById(R.id.topBar);
         imgMenu = findViewById(R.id.imgMenu);
 
@@ -109,36 +103,6 @@ public class CartViewActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        bottom_navigation.setSelectedItemId(R.id.cart);
-        bottom_navigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if (item.getItemId() == R.id.home) {
-                    currentFrag = "HOME";
-                    Intent intent = new Intent(CartViewActivity.this, DashboardActivity.class);
-                    startActivity(intent);
-                    finish();
-                    topBar.setVisibility(View.VISIBLE);
-                } else if (item.getItemId() == R.id.cart) {
-                    bottom_navigation.setLabelFor(R.id.cart);
-                    currentFrag = "CART";
-                    topBar.setVisibility(View.VISIBLE);
-                } else if (item.getItemId() == R.id.orderHistory) {
-                    currentFrag = "ORDER";
-                    topBar.setVisibility(View.VISIBLE);
-                    Intent intent = new Intent(CartViewActivity.this, OrderHistoryActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    currentFrag = "PROFILE";
-                    Intent intent = new Intent(CartViewActivity.this, ProfileActivity.class);
-                    startActivity(intent);
-                    finish();
-                    topBar.setVisibility(View.GONE);
-                }
-                return true;
-            }
-        });
         imgMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -149,7 +113,7 @@ public class CartViewActivity extends AppCompatActivity {
 
     public void fetchCartItems() {
         // Create a JsonObjectRequest for the GET request
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, cartUrl, null,
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, cartUrl, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -167,7 +131,6 @@ public class CartViewActivity extends AppCompatActivity {
                                 String cartId = jsonObject.getString("_id");
                                 JSONArray jsonArray = jsonObject.getJSONArray("items");
                                 cartViewModelArrayList.clear(); // Clear the list before adding new items
-                                ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
                                 for (int i = 0; i < jsonArray.length(); i++) {
 
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
@@ -176,37 +139,27 @@ public class CartViewActivity extends AppCompatActivity {
                                         continue;
                                     String itemId = jsonObject2.getString("_id");
                                     String quantity = jsonObject2.getString("quantity");
+                                    String isInCart = jsonObject2.getString("IsInCart");
 
                                     JSONObject jsonObject3 = jsonObject2.getJSONObject("bookId");
+
                                     String bookId = jsonObject3.getString("_id");
-                                    String type  = jsonObject3.getString("type");
                                     String title = jsonObject3.getString("title");
                                     String keyword = jsonObject3.getString("keyword");
-                                    String stock = jsonObject3.getString("stock");
                                     String price = jsonObject3.getString("price");
                                     String sellPrice = jsonObject3.getString("sellPrice");
-                                    String content = jsonObject3.getString("content");
                                     String author = jsonObject3.getString("author");
-                                    String categoryId = jsonObject3.getString("categoryId");
-                                    String subCategoryId = jsonObject3.getString("subCategoryId");
-                                    String subjectId = jsonObject3.getString("subjectId");
-                                    String createdDate = jsonObject3.getString("createdAt");
-                                    String updatedAt = jsonObject3.getString("updatedAt");
+                                    String category = jsonObject3.getString("category");
+                                    String content = jsonObject3.getString("content");
+                                    String subject = jsonObject3.getString("subject");
 
-                                    JSONArray jsonArray3 = jsonObject3.getJSONArray("images");
+                                    JSONObject jsonObject5 = jsonObject3.getJSONObject("dimension");
+                                    String length = jsonObject5.getString("length");
+                                    String height = jsonObject5.getString("height");
+                                    String breadth = jsonObject5.getString("breadth");
 
-                                    for (int j = 0; j < jsonArray3.length(); j++) {
-                                        JSONObject jsonObject4 = jsonArray3.getJSONObject(j);
-                                        BookImageModels bookImageModels = new BookImageModels(
-                                                jsonObject4.getString("url"),
-                                                jsonObject4.getString("filename"),
-                                                jsonObject4.getString("contentType"),
-                                                jsonObject4.getString("size"), // Assuming size is an integer
-                                                jsonObject4.getString("uploadDate"),
-                                                jsonObject4.getString("_id")
-                                        );
-                                        bookImageArrayList.add(bookImageModels);
-                                    }
+                                    String weight = jsonObject3.getString("weight");
+                                    String isbn = jsonObject3.getString("isbn");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -220,15 +173,34 @@ public class CartViewActivity extends AppCompatActivity {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    cartViewModel = new CartViewModel(cartId, itemId, bookId,type, title, keyword,stock, price, sellPrice, content, author, categoryId,subCategoryId,subjectId, tags.toString(),bookImageArrayList, createdDate, updatedAt, quantity);
+                                    JSONArray jsonArray3 = jsonObject3.getJSONArray("images");
+                                    ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
+                                    for (int j = 0; j < jsonArray3.length(); j++) {
+                                        JSONObject jsonObject4 = jsonArray3.getJSONObject(j);
+                                        BookImageModels bookImageModels = new BookImageModels(
+                                                jsonObject4.getString("url"),
+                                                jsonObject4.getString("filename"),
+                                                jsonObject4.getString("contentType"),
+                                                jsonObject4.getString("size"), // Assuming size is an integer
+                                                jsonObject4.getString("uploadDate"),
+                                                jsonObject4.getString("_id")
+                                        );
+                                        bookImageArrayList.add(bookImageModels);
+                                    }
+
+                                    String createdDate = jsonObject3.getString("createdAt");
+                                    String updatedAt = jsonObject3.getString("updatedAt");
+
+                                    cartViewModel = new CartViewModel(cartId, bookId, title, keyword, price, sellPrice, author, category,content,subject,length,height,breadth,weight,isbn, tags.toString(),bookImageArrayList,createdDate,updatedAt, quantity,isInCart,itemId);
                                     cartViewModelArrayList.add(cartViewModel);
                                 }
                                 // If you have already created the adapter, just notify the change
                                 if (cartViewModelArrayList.isEmpty()) {
-                                    Toast.makeText(CartViewActivity.this, "654", Toast.LENGTH_LONG).show();
-
                                     noDataLayout.setVisibility(View.VISIBLE);
                                     progressBar.setVisibility(View.GONE);
+                                    bookCartRecyclerView.setVisibility(View.GONE);
+                                    priceDetailRelativeLayout.setVisibility(View.GONE);
+                                    bottomStickyButtonLayout.setVisibility(View.GONE);
                                 } else {
                                     if (cartViewAdapter == null) {
 
@@ -267,6 +239,11 @@ public class CartViewActivity extends AppCompatActivity {
                         String jsonError = new String(error.networkResponse.data);
                         JSONObject jsonObject = new JSONObject(jsonError);
                         String message = jsonObject.optString("message", "Unknown error");
+                        noDataLayout.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        bookCartRecyclerView.setVisibility(View.GONE);
+                        priceDetailRelativeLayout.setVisibility(View.GONE);
+                        bottomStickyButtonLayout.setVisibility(View.GONE);
                         // Now you can use the message
                         Toast.makeText(CartViewActivity.this, message, Toast.LENGTH_LONG).show();
 
@@ -288,7 +265,7 @@ public class CartViewActivity extends AppCompatActivity {
     }
 
     @SuppressLint("ResourceType")
-    private void setUpPriceDetails() {
+    public void setUpPriceDetails() {
 
         int totalItems,totalOriginalPrice = 0,totalSellPrice = 0,totalDiscount = 0,totalDelivery = 0;
 
@@ -303,6 +280,14 @@ public class CartViewActivity extends AppCompatActivity {
 
         totalDiscount = totalOriginalPrice - totalSellPrice;
 
+        if (totalSellPrice > 399){
+            deliveryTxt.setText("FREE DELIVERY");
+            deliveryTxt.setTextColor(Color.GREEN);
+        }else {
+            deliveryTxt.setText("₹ " +50);
+            totalSellPrice = totalSellPrice + 50;
+        }
+
         priceItemsTxt.setText("Price (" + totalItems + " items)");
         priceOriginalTxt.setText("₹ " +totalOriginalPrice);
         totalDiscountTxt.setText("- ₹ " +totalDiscount);
@@ -310,16 +295,9 @@ public class CartViewActivity extends AppCompatActivity {
         totalAmountTxt1.setText("₹ " +totalSellPrice);
         totalAmountTxt2.setText("₹ " +totalSellPrice);
 
-        if (totalSellPrice > 1000){
-            deliveryTxt.setText("FREE DELIVERY");
-            deliveryTxt.setTextColor(Color.GREEN);
-        }else {
-            deliveryTxt.setText("₹ " +100);
-        }
-
     }
     Dialog drawerDialog;
-    LinearLayout layoutHome, layoutCart, layoutOrderHistory, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy, layoutTerms;
+    LinearLayout layoutHome, layoutCart, layoutOrderHistory,layoutProfile, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy, layoutTerms;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
     MaterialCardView cardBack;
@@ -332,6 +310,7 @@ public class CartViewActivity extends AppCompatActivity {
         layoutHome = drawerDialog.findViewById(R.id.layoutHome);
         layoutCart = drawerDialog.findViewById(R.id.layoutCart);
         layoutOrderHistory = drawerDialog.findViewById(R.id.layoutOrderHistory);
+        layoutProfile = drawerDialog.findViewById(R.id.layoutProfile);
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
         layoutShare = drawerDialog.findViewById(R.id.layoutShare);
         layoutAboutUs = drawerDialog.findViewById(R.id.layoutAboutUs);
@@ -349,12 +328,6 @@ public class CartViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 drawerDialog.dismiss();
-                if (!currentFrag.equals("HOME")) {
-                    currentFrag = "HOME";
-//                    loadFragment(new AllBooksFragment());
-                    bottom_navigation.setSelectedItemId(R.id.home);
-                    bottom_navigation.setSelected(true);
-                }
                 Intent intent = new Intent(CartViewActivity.this, DashboardActivity.class);
                 startActivity(intent);
                 finish();
@@ -364,11 +337,9 @@ public class CartViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 drawerDialog.dismiss();
-                if (!currentFrag.equals("CART")) {
-                    currentFrag = "CART";
-                    bottom_navigation.setSelectedItemId(R.id.cart);
-                    bottom_navigation.setSelected(true);
-                }
+                Intent intent = new Intent(CartViewActivity.this, CartViewActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
         layoutOrderHistory.setOnClickListener(new View.OnClickListener() {
@@ -378,6 +349,14 @@ public class CartViewActivity extends AppCompatActivity {
                 startActivity(intent);
                 drawerDialog.dismiss();
                 finish();
+            }
+        });
+        layoutProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CartViewActivity.this, ProfileActivity.class);
+                startActivity(intent);
+                drawerDialog.dismiss();
             }
         });
         cardBack.setOnClickListener(new View.OnClickListener() {
@@ -446,8 +425,13 @@ public class CartViewActivity extends AppCompatActivity {
             //e.toString();
         }
     }
-    protected void onResume() {
-        super.onResume();
-        bottom_navigation.setSelectedItemId(R.id.cart);
+    public void checkItemsInCart(){
+        if (cartViewModelArrayList.size() == 0){
+            noDataLayout.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            bookCartRecyclerView.setVisibility(View.GONE);
+            priceDetailRelativeLayout.setVisibility(View.GONE);
+            bottomStickyButtonLayout.setVisibility(View.GONE);
+        }
     }
 }

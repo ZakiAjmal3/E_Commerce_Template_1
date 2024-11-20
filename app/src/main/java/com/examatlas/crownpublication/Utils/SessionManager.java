@@ -12,7 +12,7 @@ public class SessionManager {
     public SharedPreferences.Editor editor;
     public static final String pref_name = "examatlas";
     public int PRIVATE_MODE = 0;
-    public static final String Default_Value = "DEFAULT";
+    public static final String Default_Value = "USER";
     public static final String AuthToken = "authToken";
     public static final String Mobile = "mobile";
     public static final String Name = "name";

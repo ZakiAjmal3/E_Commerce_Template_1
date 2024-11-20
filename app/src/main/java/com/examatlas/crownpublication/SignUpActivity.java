@@ -47,7 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
     EditText edtName, edtEmail, edtMobile, edtPassword, edtRePassword;
     MaterialCheckBox checkBox;
     boolean isAllFieldsChecked = false, isPasswordVisible = false, isRePasswordVisible = false;
-    private final String serverUrl = Constant.BASE_URL + "auth/createUser";
+    private final String serverUrl = Constant.BASE_URL + "user/createUser";
     SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +142,7 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        Log.d("SignUpPayload", jsonObject.toString());
+        Log.e("SignUpPayload", jsonObject.toString());
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Signing up...");
         progressDialog.setCancelable(false);

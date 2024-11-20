@@ -22,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -202,15 +201,10 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                             itemObject.put("sellPrice", cartItem.getSellPrice());
                             itemObject.put("quantity", cartItem.getQuantity());
                             itemObject.put("bookId", cartItem.getBookId());
-                            itemObject.put("type", cartItem.getType());
                             itemObject.put("keyword", cartItem.getKeyword());
-                            itemObject.put("stock", cartItem.getStock());
                             itemObject.put("price", cartItem.getPrice());
                             itemObject.put("content", cartItem.getContent());
                             itemObject.put("author", cartItem.getAuthor());
-                            itemObject.put("categoryId", cartItem.getCategoryId());
-                            itemObject.put("subCategoryId", cartItem.getSubCategoryId());
-                            itemObject.put("subjectId", cartItem.getSubjectId());
                             itemObject.put("createdDate", cartItem.getCreatedAt());
                             itemObject.put("updatedAt", cartItem.getUpdatedAt());
 
@@ -682,11 +676,11 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                                 noDataLayout.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.GONE);
 
+
                                 JSONObject jsonObject = response.getJSONObject("cart");
                                 String cartId = jsonObject.getString("_id");
                                 JSONArray jsonArray = jsonObject.getJSONArray("items");
                                 cartViewModelArrayList.clear(); // Clear the list before adding new items
-                                ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
                                 for (int i = 0; i < jsonArray.length(); i++) {
 
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
@@ -695,37 +689,27 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                                         continue;
                                     String itemId = jsonObject2.getString("_id");
                                     String quantity = jsonObject2.getString("quantity");
+                                    String isInCart = jsonObject2.getString("IsInCart");
 
                                     JSONObject jsonObject3 = jsonObject2.getJSONObject("bookId");
+
                                     String bookId = jsonObject3.getString("_id");
-                                    String type  = jsonObject3.getString("type");
                                     String title = jsonObject3.getString("title");
                                     String keyword = jsonObject3.getString("keyword");
-                                    String stock = jsonObject3.getString("stock");
                                     String price = jsonObject3.getString("price");
                                     String sellPrice = jsonObject3.getString("sellPrice");
-                                    String content = jsonObject3.getString("content");
                                     String author = jsonObject3.getString("author");
-                                    String categoryId = jsonObject3.getString("categoryId");
-                                    String subCategoryId = jsonObject3.getString("subCategoryId");
-                                    String subjectId = jsonObject3.getString("subjectId");
-                                    String createdDate = jsonObject3.getString("createdAt");
-                                    String updatedAt = jsonObject3.getString("updatedAt");
+                                    String category = jsonObject3.getString("category");
+                                    String content = jsonObject3.getString("content");
+                                    String subject = jsonObject3.getString("subject");
 
-                                    JSONArray jsonArray3 = jsonObject3.getJSONArray("images");
+                                    JSONObject jsonObject5 = jsonObject3.getJSONObject("dimension");
+                                    String length = jsonObject5.getString("length");
+                                    String height = jsonObject5.getString("height");
+                                    String breadth = jsonObject5.getString("breadth");
 
-                                    for (int j = 0; j < jsonArray3.length(); j++) {
-                                        JSONObject jsonObject4 = jsonArray3.getJSONObject(j);
-                                        BookImageModels bookImageModels = new BookImageModels(
-                                                jsonObject4.getString("url"),
-                                                jsonObject4.getString("filename"),
-                                                jsonObject4.getString("contentType"),
-                                                jsonObject4.getString("size"), // Assuming size is an integer
-                                                jsonObject4.getString("uploadDate"),
-                                                jsonObject4.getString("_id")
-                                        );
-                                        bookImageArrayList.add(bookImageModels);
-                                    }
+                                    String weight = jsonObject3.getString("weight");
+                                    String isbn = jsonObject3.getString("isbn");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -739,7 +723,25 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                                         tags.setLength(tags.length() - 2);
                                     }
 
-                                    cartViewModel = new CartViewModel(cartId, itemId, bookId,type, title, keyword,stock, price, sellPrice, content, author, categoryId,subCategoryId,subjectId, tags.toString(),bookImageArrayList, createdDate, updatedAt, quantity);
+                                    JSONArray jsonArray3 = jsonObject3.getJSONArray("images");
+                                    ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
+                                    for (int j = 0; j < jsonArray3.length(); j++) {
+                                        JSONObject jsonObject4 = jsonArray3.getJSONObject(j);
+                                        BookImageModels bookImageModels = new BookImageModels(
+                                                jsonObject4.getString("url"),
+                                                jsonObject4.getString("filename"),
+                                                jsonObject4.getString("contentType"),
+                                                jsonObject4.getString("size"), // Assuming size is an integer
+                                                jsonObject4.getString("uploadDate"),
+                                                jsonObject4.getString("_id")
+                                        );
+                                        bookImageArrayList.add(bookImageModels);
+                                    }
+
+                                    String createdDate = jsonObject3.getString("createdAt");
+                                    String updatedAt = jsonObject3.getString("updatedAt");
+
+                                    cartViewModel = new CartViewModel(cartId, bookId, title, keyword, price, sellPrice, author, category, content, subject, length, height, breadth, weight, isbn, tags.toString(), bookImageArrayList, createdDate, updatedAt, quantity, isInCart, itemId);
                                     cartViewModelArrayList.add(cartViewModel);
                                 }
                                 // If you have already created the adapter, just notify the change

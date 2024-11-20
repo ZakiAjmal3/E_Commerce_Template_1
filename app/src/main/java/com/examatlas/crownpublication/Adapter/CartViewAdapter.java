@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
@@ -25,11 +26,13 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.examatlas.crownpublication.R;
 import com.examatlas.crownpublication.Adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.crownpublication.CartViewActivity;
 import com.examatlas.crownpublication.Models.CartViewModel;
-import com.examatlas.crownpublication.R;
 import com.examatlas.crownpublication.Utils.Constant;
 import com.examatlas.crownpublication.Utils.MySingleton;
 import com.examatlas.crownpublication.Utils.SessionManager;
@@ -66,7 +69,13 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CartViewModel currentBook = cartViewModelArrayList.get(position);
-        holder.title.setText(currentBook.getTitle());
+
+        String title = currentBook.getTitle();
+        if (title.length() > 40) {
+            title = title.substring(0, 40) + "..."; // Truncate and append "..."
+        }
+
+        holder.title.setText(title);
         holder.author.setText(currentBook.getAuthor());
 
         // Calculate prices and discounts if applicable
@@ -93,7 +102,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
         // Set the spannable text to holder
         holder.price.setText(spannableText);
 
-        BookImageAdapter bookImageAdapter = new BookImageAdapter(currentBook.getBookImageArrayList());
+        BookImageAdapter bookImageAdapter = new BookImageAdapter(currentBook.getBookImageArrayList(),holder.bookImage,holder.dotsLinearLayout);
         holder.bookImage.setAdapter(bookImageAdapter);
 
         // Set quantity
@@ -246,9 +255,10 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
         Log.d("DeleteBookRequest", "UserId: " + userId);
         Log.d("DeleteBookRequest", "ItemId: " + itemId);
 
-        if (userId == null || itemId == null) {
-            Log.e("DeleteBookRequest", "UserId or ItemId is null");
-            Toast.makeText(context, "User ID or Item ID is null", Toast.LENGTH_LONG).show();
+        // Check if userId or itemId is null or empty
+        if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(itemId)) {
+            Log.e("DeleteBookRequest", "UserId or ItemId is null or empty");
+            Toast.makeText(context, "User ID or Item ID is empty", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -257,49 +267,53 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
             jsonObject.put("userId", userId);
             jsonObject.put("itemId", itemId);
         } catch (JSONException e) {
-            Log.e("DeleteBookRequest", "JSON Exception: " + e.getMessage());
+            e.printStackTrace();
             return;
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, deleteUrl, jsonObject,
-                response -> {
-                    try {
-                        boolean success = response.getBoolean("success");
-                        String message = response.getString("message");
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        Log.d("DeleteBookRequest", "Json Body: " + jsonObject.toString());
 
-                        if (success) {
-                            int position = cartViewModelArrayList.indexOf(currentBook);
-                            if (position != -1) {
-                                cartViewModelArrayList.remove(position);
-                                notifyItemRemoved(position);
-                            } else {
-                                Toast.makeText(context, "Item not found in the cart", Toast.LENGTH_SHORT).show();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, deleteUrl, jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            boolean status = response.getBoolean("success");
+                            if (status) {
+                                Toast.makeText(context, "Item removed from the cart", Toast.LENGTH_SHORT).show();
+                                cartViewModelArrayList.remove(currentBook);
+                                ((CartViewActivity) context).setUpPriceDetails();
+                                ((CartViewActivity) context).checkItemsInCart();
+                                notifyDataSetChanged();
                             }
+                        } catch (JSONException e) {
+                            Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
-                    } catch (JSONException e) {
-                        Toast.makeText(context, "Error processing response", Toast.LENGTH_SHORT).show();
-                        Log.e("DeleteCartItemsError", "JSON Exception: " + e.getMessage());
                     }
-                }, error -> {
-            String errorMessage = "Error: " + error.toString();
-            if (error.networkResponse != null) {
-                try {
-                    String responseData = new String(error.networkResponse.data, "UTF-8");
-                    errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
-                    errorMessage += "\nResponse Data: " + responseData;
-                } catch (Exception e) {
-                    Log.e("DeleteCartItemsError", "Error reading response data: " + e.getMessage());
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String errorMessage = "Error: " + error.toString();
+                if (error.networkResponse != null) {
+                    try {
+                        String responseData = new String(error.networkResponse.data, "UTF-8");
+                        errorMessage += "\nStatus Code: " + error.networkResponse.statusCode;
+                        errorMessage += "\nResponse Data: " + responseData;
+                        Log.d("DeleteBookError", "Response Data: " + responseData);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+                Log.e("DeleteBookError", errorMessage);
             }
-            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
-            Log.e("DeleteCartItemsError", errorMessage);
-        }) {
+        }){
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
+                Map<String, String> headers = new HashMap<String, String>();
                 headers.put("Content-Type", "application/json");
-                if (authToken != null && !authToken.isEmpty()) {
+                headers.put("Accept", "application/json");  // Add Accept header
+                if (!TextUtils.isEmpty(authToken)) {
                     headers.put("Authorization", "Bearer " + authToken);
                 }
                 return headers;
@@ -318,6 +332,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
         ImageView deleteBookBtn;
         ViewPager2 bookImage;
         ProgressBar quantityProgressbar;
+        LinearLayout dotsLinearLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -328,6 +343,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
             deleteBookBtn = itemView.findViewById(R.id.deleteBookBtn);
             quantityTxt = itemView.findViewById(R.id.quantityTxtView);
             quantityProgressbar = itemView.findViewById(R.id.quantityProgressbar);
+            dotsLinearLayout = itemView.findViewById(R.id.indicatorLayout);
         }
     }
 }

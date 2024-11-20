@@ -10,9 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.examatlas.crownpublication.Models.CreateDeliveryAddressModel;
 import com.examatlas.crownpublication.R;
-
+import com.examatlas.crownpublication.Models.CreateDeliveryAddressModel;
 import java.util.ArrayList;
 
 public class CreateDeliveryAddressAdapter extends RecyclerView.Adapter<CreateDeliveryAddressAdapter.ViewHolder> {

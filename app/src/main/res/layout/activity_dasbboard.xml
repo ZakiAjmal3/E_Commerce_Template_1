@@ -46,19 +46,29 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/imgMenu"
-            android:text="CROWN"
+            android:text="CROWN PUBLICATIONS"
             android:textSize="20sp"
             android:textColor="@color/white"
             android:textAlignment="center"
             android:textStyle="bold"
             android:visibility="visible" />
+        <ImageView
+            android:id="@+id/cartBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_cart"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+
+            />
     </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/topBar"
-        android:layout_above="@id/bottom_navigation">
+        android:layout_below="@id/topBar">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -66,21 +76,20 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/slider_cardView"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="140dp"
                 app:cardBackgroundColor="@color/white"
                 app:strokeWidth="0dp">
 
                 <com.denzcoskun.imageslider.ImageSlider
                     android:id="@+id/slider"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="130dp"
                     android:layout_gravity="center"
-                    android:layout_margin="15dp"
+                    android:layout_margin="10dp"
                     app:iss_auto_cycle="true"
-                    app:iss_period="1000"
+                    app:iss_period="1500"
                     app:iss_delay="0" />
             </com.google.android.material.card.MaterialCardView>
-
             <TextView
                 android:id="@+id/browseExamNameTxt"
                 android:layout_width="wrap_content"
@@ -90,10 +99,9 @@
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginTop="5dp" />
             <TextView
-                android:id="@+id/showAllNameTxt"
+                android:id="@+id/showAllBookCategoryTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=" Show All books "
@@ -101,17 +109,14 @@
                 android:layout_toRightOf="@id/browseExamNameTxt"
                 android:textStyle="bold"
                 android:textColor="@color/seed"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="10dp"/>
-
+                android:layout_marginTop="5dp"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/examCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/browseExamNameTxt"
                 android:orientation="horizontal"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+                android:layout_margin="10dp"
                 android:visibility="visible"/>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -119,13 +124,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/examCategory"
-                android:visibility="visible"/>
-
+                android:visibility="visible"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                />
+            <TextView
+                android:id="@+id/noBooksInThisCategoryTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No Books in this Category"
+                android:layout_below="@id/examCategory"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp"
+                android:textStyle="bold"
+                android:textSize="18dp"
+                android:textColor="@color/md_theme_dark_onError"
+                android:visibility="gone"/>
             <RelativeLayout
                 android:id="@+id/noDataLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_below="@id/slider_cardView"
                 android:background="@color/white"
                 android:translationY="20dp"
                 android:visibility="gone">
@@ -177,13 +196,4 @@
             </RelativeLayout>
         </RelativeLayout>
     </ScrollView>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:itemBackground="@color/bottom_grey"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_menu" />
 </RelativeLayout>

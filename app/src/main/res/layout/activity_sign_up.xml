@@ -234,7 +234,8 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins"
                     android:text="I agree to the "
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:outlineSpotShadowColor="@color/white"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -250,11 +251,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:backgroundTint="@color/seed"
+                android:backgroundTint="@color/white"
                 android:fontFamily="@font/poppins"
                 android:padding="15dp"
                 android:text="Sign Up"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 

@@ -5,20 +5,16 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:cardCornerRadius="10dp"
+    android:layout_margin="5dp"
+    app:cardBackgroundColor="@color/md_theme_dark_primary"
+    app:cardElevation="2dp"
     app:strokeColor="@color/md_theme_dark_errorContainer"
-    app:strokeWidth="1dp">
+    app:strokeWidth="10dp"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+    >
     <RelativeLayout
         android:layout_width="70dp"
-        android:layout_height="70dp"
-        >
-        <ImageView
-            android:id="@+id/imgMenu"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:src="@drawable/nodataimage"
-            android:layout_centerHorizontal="true"
-            android:padding="5dp"
-            />
+        android:layout_height="wrap_content">
         <TextView
             android:id="@+id/examNameTxt"
             android:layout_width="wrap_content"
@@ -26,9 +22,10 @@
             android:text="Exam Name"
             android:textSize="10dp"
             android:textColor="@color/black"
-            android:layout_below="@id/imgMenu"
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"/>
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"/>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

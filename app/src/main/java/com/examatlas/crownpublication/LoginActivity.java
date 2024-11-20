@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     MaterialButton btnLogin;
     private ImageView eyePassword;
     private boolean isPasswordVisible = false;
-    private final String serverUrl = Constant.BASE_URL + "auth/loginUser";
+        private final String serverUrl = Constant.BASE_URL + "user/loginUser";
     SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        progressDialog.dismiss();
+                            progressDialog.dismiss();
                         String errorMessage = "Error: " + error.toString();
                         if (error.networkResponse != null) {
                             try {

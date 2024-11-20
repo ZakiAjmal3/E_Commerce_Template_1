@@ -6,67 +6,31 @@ import com.examatlas.crownpublication.Models.extraModels.BookImageModels;
 import java.util.ArrayList;
 
 public class CartViewModel {
-    String cartId,itemId,bookId,type,title,keyword,stock,price,sellPrice,content,author, categoryId,subCategoryId,subjectId,tags,createdAt,updatedAt,quantity;
+    String cartId, bookId, title, keyword, price, sellPrice, author, category, content, subject, length, height, breadth, weight, isbn, tags, createdAt, updatedAt, quantity, itemId, isInCart;
     ArrayList<BookImageModels> bookImageArrayList;
-    public CartViewModel(String cartId, String itemId, String bookId, String type, String title, String keyword, String stock, String price, String sellPrice, String content, String author, String categoryId, String subCategoryId, String subjectId, String tags, ArrayList bookImageArrayList, String createdAt, String updatedAt, String quantity) {
+
+    public CartViewModel(String cartId, String bookId, String title, String keyword, String price, String sellPrice, String author, String category, String content, String subject, String length, String height, String breadth, String weight, String isbn, String tags, ArrayList<BookImageModels> bookImageArrayList, String createdAt, String updatedAt, String quantity, String isInCart, String itemId) {
         this.cartId = cartId;
-        this.itemId = itemId;
-        this.type = type;
         this.bookId = bookId;
         this.title = title;
         this.keyword = keyword;
-        this.stock = stock;
         this.price = price;
         this.sellPrice = sellPrice;
-        this.content = content;
         this.author = author;
-        this.categoryId = categoryId;
-        this.subCategoryId = subCategoryId;
-        this.subjectId = subjectId;
-        this.bookImageArrayList = bookImageArrayList;
+        this.category = category;
+        this.content = content;
+        this.subject = subject;
+        this.length = length;
+        this.height = height;
+        this.breadth = breadth;
+        this.weight = weight;
+        this.isbn = isbn;
         this.tags = tags;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.quantity = quantity;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getStock() {
-        return stock;
-    }
-
-    public void setStock(String stock) {
-        this.stock = stock;
-    }
-
-    public String getSubCategoryId() {
-        return subCategoryId;
-    }
-
-    public void setSubCategoryId(String subCategoryId) {
-        this.subCategoryId = subCategoryId;
-    }
-
-    public String getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(String subjectId) {
-        this.subjectId = subjectId;
-    }
-
-    public ArrayList<BookImageModels> getBookImageArrayList() {
-        return bookImageArrayList;
-    }
-
-    public void setBookImageArrayList(ArrayList<BookImageModels> bookImageArrayList) {
+        this.itemId = itemId;
+        this.isInCart = isInCart;
         this.bookImageArrayList = bookImageArrayList;
     }
 
@@ -76,14 +40,6 @@ public class CartViewModel {
 
     public void setCartId(String cartId) {
         this.cartId = cartId;
-    }
-
-    public String getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
     }
 
     public String getBookId() {
@@ -126,14 +82,6 @@ public class CartViewModel {
         this.sellPrice = sellPrice;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public String getAuthor() {
         return author;
     }
@@ -142,12 +90,68 @@ public class CartViewModel {
         this.author = author;
     }
 
-    public String getCategoryId() {
-        return categoryId;
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public void setLength(String length) {
+        this.length = length;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
+    }
+
+    public String getBreadth() {
+        return breadth;
+    }
+
+    public void setBreadth(String breadth) {
+        this.breadth = breadth;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
     public String getTags() {
@@ -180,5 +184,29 @@ public class CartViewModel {
 
     public void setQuantity(String quantity) {
         this.quantity = quantity;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    public String getIsInCart() {
+        return isInCart;
+    }
+
+    public void setIsInCart(String isInCart) {
+        this.isInCart = isInCart;
+    }
+
+    public ArrayList<BookImageModels> getBookImageArrayList() {
+        return bookImageArrayList;
+    }
+
+    public void setBookImageArrayList(ArrayList<BookImageModels> bookImageArrayList) {
+        this.bookImageArrayList = bookImageArrayList;
     }
 }

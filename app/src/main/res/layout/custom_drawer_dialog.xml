@@ -100,7 +100,7 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/home" />
+                            android:src="@drawable/ic_home" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -168,6 +168,32 @@
 
                     </LinearLayout>
                     <LinearLayout
+                        android:id="@+id/layoutProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+
+                        <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/ic_profile_drawer" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:fontFamily="@font/poppins"
+                            android:text="Profile"
+                            android:textColor="@color/white"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+                    <LinearLayout
                         android:id="@+id/layoutAboutUs"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
@@ -181,7 +207,7 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/user" />
+                            android:src="@drawable/ic_about" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -260,7 +286,7 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/share" />
+                            android:src="@drawable/ic_share" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -286,7 +312,7 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/logout" />
+                            android:src="@drawable/ic_logout" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -294,6 +320,33 @@
                             android:layout_marginStart="20dp"
                             android:fontFamily="@font/poppins"
                             android:text="Logout"
+                            android:textColor="@color/white"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/layoutLogin"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="10dp"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_login" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:fontFamily="@font/poppins"
+                            android:text="Login"
                             android:textColor="@color/white"
                             android:textStyle="bold" />
 

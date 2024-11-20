@@ -1,36 +1,200 @@
+
 package com.examatlas.crownpublication.Models;
+
+import com.examatlas.crownpublication.Models.extraModels.BookImageModels;
 
 import java.util.ArrayList;
 
 public class DashboardModel {
-    String id,title,keyword,content,price,sellPrice,tags,author, categoryId,createdAt,updatedAt,itemId = null,type,stock,subCategoryId,subjectId,bookUrl,isInCart,isInWishList;
-    ArrayList images;
-    int totalRows,totalPages,currentPage,pageSize;
+    String bookID, title, keyword, price, sellPrice, author, category, content, subject, length, breadth, height, weight, isbn, tags, isInCart, createdAt, updatedAt, isInWishList;
+    ArrayList<BookImageModels> images;
+    int totalRows, totalPages, currentPage, pageSize;
 
-    public DashboardModel(String id, String type, String title, String keyword, String stock, String price, String sellPrice, String content, String author, String categoryId, String subCategoryId, String subjectId, String tags, String bookUrl, ArrayList images, String createdAt, String updatedAt, String isInCart, String isInWishList, int totalRows, int totalPages,int currentPage,int pageSize) {
-        this.id = id;
+    public DashboardModel(String bookID, String title, String keyword, String price, String sellPrice, String author, String category, String content, String subject, String length, String breadth, String height, String weight, String isbn, String tags, String isInCart, ArrayList<BookImageModels> images, String createdAt, String updatedAt, String isInWishList, int totalRows, int totalPages, int currentPage, int pageSize) {
+        this.bookID = bookID;
         this.title = title;
         this.keyword = keyword;
-        this.content = content;
         this.price = price;
         this.sellPrice = sellPrice;
-        this.tags = tags;
         this.author = author;
-        this.categoryId = categoryId;
+        this.category = category;
+        this.content = content;
+        this.subject = subject;
+        this.length = length;
+        this.breadth = breadth;
+        this.height = height;
+        this.weight = weight;
+        this.isbn = isbn;
+        this.tags = tags;
+        this.isInCart = isInCart;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.stock = stock;
-        this.type = type;
-        this.subCategoryId = subCategoryId;
-        this.subjectId = subjectId;
-        this.bookUrl = bookUrl;
-        this.images = images;
-        this.isInCart = isInCart;
         this.isInWishList = isInWishList;
+        this.images = images;
         this.totalRows = totalRows;
         this.totalPages = totalPages;
         this.currentPage = currentPage;
         this.pageSize = pageSize;
+    }
+
+    public String getBookID() {
+        return bookID;
+    }
+
+    public void setBookID(String bookID) {
+        this.bookID = bookID;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getSellPrice() {
+        return sellPrice;
+    }
+
+    public void setSellPrice(String sellPrice) {
+        this.sellPrice = sellPrice;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public void setLength(String length) {
+        this.length = length;
+    }
+
+    public String getBreadth() {
+        return breadth;
+    }
+
+    public void setBreadth(String breadth) {
+        this.breadth = breadth;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public String getIsInCart() {
+        return isInCart;
+    }
+
+    public void setIsInCart(String isInCart) {
+        this.isInCart = isInCart;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getIsInWishList() {
+        return isInWishList;
+    }
+
+    public void setIsInWishList(String isInWishList) {
+        this.isInWishList = isInWishList;
+    }
+
+    public ArrayList<BookImageModels> getImages() {
+        return images;
+    }
+
+    public void setImages(ArrayList<BookImageModels> images) {
+        this.images = images;
     }
 
     public int getTotalRows() {
@@ -63,165 +227,5 @@ public class DashboardModel {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
-    }
-
-    public String getIsInWishList() {
-        return isInWishList;
-    }
-
-    public void setIsInWishList(String isInWishList) {
-        this.isInWishList = isInWishList;
-    }
-
-    public String getIsInCart() {
-        return isInCart;
-    }
-
-    public void setIsInCart(String isInCart) {
-        this.isInCart = isInCart;
-    }
-
-    public ArrayList getImages() {
-        return images;
-    }
-
-    public void setImages(ArrayList images) {
-        this.images = images;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getStock() {
-        return stock;
-    }
-
-    public void setStock(String stock) {
-        this.stock = stock;
-    }
-
-    public String getSubCategoryId() {
-        return subCategoryId;
-    }
-
-    public void setSubCategoryId(String subCategoryId) {
-        this.subCategoryId = subCategoryId;
-    }
-
-    public String getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(String subjectId) {
-        this.subjectId = subjectId;
-    }
-
-    public String getBookUrl() {
-        return bookUrl;
-    }
-
-    public void setBookUrl(String bookUrl) {
-        this.bookUrl = bookUrl;
-    }
-
-    public String getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getSellPrice() {
-        return sellPrice;
-    }
-
-    public void setSellPrice(String sellPrice) {
-        this.sellPrice = sellPrice;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

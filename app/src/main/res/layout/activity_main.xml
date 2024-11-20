@@ -9,6 +9,7 @@
     android:background="@color/md_theme_dark_errorContainer">
 
     <LinearLayout
+        android:id="@+id/layout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -18,24 +19,33 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:src="@drawable/ic_crown"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="5dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="CROWN"
             android:textSize="50sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="14dp"
             android:textColor="@color/white"/>
     </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PUBLICATIONS"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_below="@id/layout1"
+        android:layout_centerHorizontal="true"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="20dp"
         android:fontFamily="@font/poppins"
         android:gravity="center"
-        android:text="Developed By ZAKI AJMAL"
+        android:text="Developed &amp; Maintained by BYTE LAB"
         android:textColor="@color/white"
-        android:textSize="12sp" />
+        android:textSize="15sp" />
 </RelativeLayout>

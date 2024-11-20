@@ -141,11 +141,11 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                 finish();
             }
         });
-
     }
     @Override
     public void onPaymentSuccess(String razorpayPaymentID, PaymentData paymentData) {
         verifyPaymentStatus(razorpayPaymentID,paymentData);
+//        getOrderDetails(razorpayPaymentID,paymentData);
     }
 
     @Override
@@ -163,8 +163,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
             jsonBody.put("razorpay_payment_id", razorpayPaymentID);
             jsonBody.put("razorpay_order_id", razorpayOrderID);
             jsonBody.put("razorpay_signature", paymentData.getSignature());
-            jsonBody.put("isApp", true);
-//            jsonBody.put("userId", sessionManager.getUserData().get("user_id"));
+            jsonBody.put("isApp", "false");
             // Add any other data needed for verification
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, orderDetailsURL, jsonBody,
@@ -196,6 +195,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                             JSONObject jsonObject = new JSONObject(jsonError);
                             String message = jsonObject.optString("message", "Unknown error");
                             // Now you can use the message
+                            Log.e("Error message" , message);
                             Toast.makeText(BookOrderPaymentActivity.this, message, Toast.LENGTH_LONG).show();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -217,7 +217,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
         }
     }
     private void getOrderDetails(String razorpayPaymentID, PaymentData paymentData) {
-        String orderDetailsURL = "https://examatlas-backend.onrender.com/api/payment/getOneOrderByUserId/" + userID;
+        String orderDetailsURL = Constant.BASE_URL + "payment/getOneOrderByUserId/" + userID;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, orderDetailsURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
