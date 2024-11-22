@@ -59,6 +59,7 @@ public class BookImageAdapter extends RecyclerView.Adapter<BookImageAdapter.Slid
     }
 
     private void setupDots() {
+        indicatorLayout.removeAllViews();
         // Add dots to the indicatorLayout based on the number of images
         for (int i = 0; i < imageList.size(); i++) {
             ImageView dot = new ImageView(viewPager.getContext());

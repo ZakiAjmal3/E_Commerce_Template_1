@@ -1,25 +1,31 @@
 package com.examatlas.crownpublication;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,13 +61,15 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DashboardActivity extends AppCompatActivity {
+    RelativeLayout parentLayout;
+    ScrollView scrollViewAboveBookRecycler;
     private ImageSlider slider;
     RecyclerView allBooksRecyclerView,examCategoryRecyclerView;
     ArrayList<DashboardCategoryModel> dashboardCategoryModelArrayList;
     ArrayList<SlideModel> sliderArrayList;
-    DashboardModel dashboardModel;
+    private SearchView searchView;
     DashboardAdapter dashboardAdapter;
-    ArrayList<DashboardModel> dashboardModelArrayList;
+    static ArrayList<DashboardModel> dashboardModelArrayList;
     ArrayList<DashboardModel> dashboardSortingModelArrayList;
     ProgressBar progressBar;
     RelativeLayout noDataLayout;
@@ -76,25 +84,26 @@ public class DashboardActivity extends AppCompatActivity {
     private final int itemsPerPage = 10;
     private boolean isLoading = false;
     TextView showAllCategoryBookTxt,noBookInThisCategoryTxt;
+    private boolean isSearchViewFocused = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dasbboard);
+
+        parentLayout = findViewById(R.id.parentLayout);
+        scrollViewAboveBookRecycler = findViewById(R.id.scrollViewAboveBookRecycler);
+        scrollViewAboveBookRecycler.setVisibility(View.GONE);
 
         imgMenu = findViewById(R.id.imgMenu);
         cartIconBtn = findViewById(R.id.cartBtn);
         topBar = findViewById(R.id.topBar);
         slider = findViewById(R.id.slider);
 
+        searchView = findViewById(R.id.searchView);
+
         noBookInThisCategoryTxt = findViewById(R.id.noBooksInThisCategoryTxt);
         showAllCategoryBookTxt = findViewById(R.id.showAllBookCategoryTxt);
-
-        showAllCategoryBookTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getAllBooks();
-            }
-        });
+        showAllCategoryBookTxt.setClickable(false);
 
         noDataLayout = findViewById(R.id.noDataLayout);
         progressBar = findViewById(R.id.progressBar);
@@ -117,6 +126,73 @@ public class DashboardActivity extends AppCompatActivity {
 //        sliderArrayList.add(new SlideModel(R.drawable.image2, ScaleTypes.CENTER_CROP));
 //        sliderArrayList.add(new SlideModel(R.drawable.image3, ScaleTypes.CENTER_CROP));
 //        slider.setImageList(sliderArrayList);
+        getBannerImage();
+        getCategory();
+        getAllBooks();
+
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (TextUtils.isEmpty(searchView.getQuery())) {
+                    // When SearchView is clicked and it's empty, hide the whole layout
+                    hideLayout();
+                    openKeyboard();
+                } else {
+                    // If there's text in the SearchView, just open the keyboard
+                    openKeyboard();
+                }
+            }
+        });
+
+        // Set up touch listener for the parent layout
+        parentLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (searchView.isShown() && !isPointInsideView(event.getRawX(), event.getRawY(), searchView)) {
+                        searchView.setIconified(true); // Collapse the search view
+                        InputMethodManager imm = (InputMethodManager) DashboardActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0); // Hide the keyboard
+
+                        // If the query is empty, show the whole layout again
+                        if (TextUtils.isEmpty(searchView.getQuery())) {
+                            showLayout();
+                        }
+                    }
+                }
+                return false; // Allow other events to be handled
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Not needed for this implementation
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Call the filter method when the search text changes
+                if (dashboardAdapter != null) {
+                    dashboardAdapter.filter(newText);
+                }
+
+                // If there is text, keep the layout hidden, otherwise show it
+                if (TextUtils.isEmpty(newText)) {
+                    showLayout();
+                } else {
+                    hideLayout();
+                }
+                return true;
+            }
+        });
+
+        showAllCategoryBookTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                restoreOriginalList();
+            }
+        });
 
         imgMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,9 +226,6 @@ public class DashboardActivity extends AppCompatActivity {
                 }
             }
         });
-        getBannerImage();
-        getCategory();
-        getAllBooks();
         allBooksRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -175,6 +248,47 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (searchView.isIconified()) {
+            super.onBackPressed();
+        } else {
+            if (TextUtils.isEmpty(searchView.getQuery())) {
+                // If no query is present, show the layout again
+                showLayout();
+                super.onBackPressed();
+            } else {
+                // If there's text, just close the keyboard and keep the layout hidden
+                searchView.setIconified(true);
+                InputMethodManager imm = (InputMethodManager) DashboardActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0); // Hide the keyboard
+            }
+        }
+    }
+
+    // Helper methods to control layout visibility
+    private void hideLayout() {
+        scrollViewAboveBookRecycler.setVisibility(View.GONE);
+    }
+
+    private void showLayout() {
+        scrollViewAboveBookRecycler.setVisibility(View.VISIBLE);
+    }
+
+    private void openKeyboard() {
+        searchView.setIconified(false); // Expands the search view
+        searchView.requestFocus(); // Requests focus
+        InputMethodManager imm = (InputMethodManager) DashboardActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(searchView, InputMethodManager.SHOW_IMPLICIT); // Show the keyboard
+    }
+
+    private boolean isPointInsideView(float x, float y, View view) {
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        return (x >= location[0] && x <= (location[0] + view.getWidth()) &&
+                y >= location[1] && y <= (location[1] + view.getHeight()));
     }
 
     private void getBannerImage() {
@@ -254,6 +368,7 @@ public class DashboardActivity extends AppCompatActivity {
                                 DashboardCategoryModel dashboardCategoryModel = new DashboardCategoryModel(categoryId,categoryName,categoryDescription,tags,isActive,totalRows,totalPages,currentPage);
                                 dashboardCategoryModelArrayList.add(dashboardCategoryModel);
                             }
+
                             examCategoryRecyclerView.setAdapter(new DashboardCategoryAdapter(dashboardCategoryModelArrayList,DashboardActivity.this));
                             getAllBooks();
                         } catch (JSONException e) {
@@ -301,6 +416,8 @@ public class DashboardActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             allBooksRecyclerView.setVisibility(View.VISIBLE);
+                            scrollViewAboveBookRecycler.setVisibility(View.VISIBLE);
+                            searchView.setVisibility(View.VISIBLE);
                             progressBar.setVisibility(View.GONE);
                             boolean status = response.getBoolean("status");
 
@@ -361,9 +478,16 @@ public class DashboardActivity extends AppCompatActivity {
                                     );
                                     dashboardModelArrayList.add(model);
                                 }
+
+                                // Update the original list in the adapter
+                                if (dashboardAdapter != null) {
+                                    dashboardAdapter.updateOriginalList(dashboardModelArrayList);
+                                }
+
                                 updateUI();
                                 if (dashboardModelArrayList.isEmpty()) {
                                     noDataLayout.setVisibility(View.VISIBLE);
+                                    searchView.setVisibility(View.GONE);
                                     allBooksRecyclerView.setVisibility(View.GONE);
                                     progressBar.setVisibility(View.GONE);
                                 } else {
@@ -374,6 +498,7 @@ public class DashboardActivity extends AppCompatActivity {
                                         dashboardAdapter.notifyDataSetChanged();
                                     }
                                 }
+                                showAllCategoryBookTxt.setClickable(true);
                             } else {
                                 Toast.makeText(DashboardActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
                             }
@@ -441,7 +566,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     Dialog drawerDialog;
-    LinearLayout layoutHome, layoutCart, layoutOrderHistory,layoutProfile, layoutLogout,layoutLogin, layoutShare, layoutAboutUs, layoutPrivacy, layoutTerms;
+    LinearLayout layoutHome, layoutCart, layoutOrderHistory,layoutProfile,layoutOrderInBulk,layoutJoinAsAuthor, layoutLogout,layoutLogin, layoutShare, layoutAboutUs, layoutPrivacy, layoutTerms;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
     MaterialCardView cardBack;
@@ -455,6 +580,8 @@ public class DashboardActivity extends AppCompatActivity {
         layoutCart = drawerDialog.findViewById(R.id.layoutCart);
         layoutOrderHistory = drawerDialog.findViewById(R.id.layoutOrderHistory);
         layoutProfile = drawerDialog.findViewById(R.id.layoutProfile);
+        layoutOrderInBulk = drawerDialog.findViewById(R.id.layoutBulkOrder);
+        layoutJoinAsAuthor = drawerDialog.findViewById(R.id.layoutJoinAsAuthor);
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
         layoutLogin = drawerDialog.findViewById(R.id.layoutLogin);
         layoutShare = drawerDialog.findViewById(R.id.layoutShare);
@@ -618,6 +745,20 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        layoutOrderInBulk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, BulkOrderRegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+        layoutJoinAsAuthor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, JoinAsAuthorActivity.class);
+                startActivity(intent);
+            }
+        });
 
         drawerDialog.show();
         drawerDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -665,25 +806,42 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
-    public void sortBookWithExamName(String examName){
-        if (!examName.isEmpty()){
+    public void sortBookWithExamName(String examName) {
+        // Clear the sorting list before adding new items
+        dashboardSortingModelArrayList.clear();
+
+        if (!examName.isEmpty()) {
+            // Loop through the list and add matching categories to the sorted list
             for (int i = 0; i < dashboardModelArrayList.size(); i++) {
-                if (dashboardModelArrayList.get(i).getCategory().equalsIgnoreCase(examName)){
+                if (dashboardModelArrayList.get(i).getCategory().equalsIgnoreCase(examName)) {
                     dashboardSortingModelArrayList.add(dashboardModelArrayList.get(i));
                 }
             }
-            if (dashboardSortingModelArrayList.isEmpty()){
+
+            // Check if sorting list is empty and update the UI accordingly
+            if (dashboardSortingModelArrayList.isEmpty()) {
                 noBookInThisCategoryTxt.setVisibility(View.VISIBLE);
                 allBooksRecyclerView.setVisibility(View.GONE);
-            }else {
-                dashboardAdapter = new DashboardAdapter(DashboardActivity.this, dashboardSortingModelArrayList);
-                allBooksRecyclerView.setAdapter(dashboardAdapter);
+            } else {
+                // Update adapter data and notify the change
+                dashboardAdapter.updateData(dashboardSortingModelArrayList); // Use a method to update data in the adapter
+                allBooksRecyclerView.setVisibility(View.VISIBLE);
+                noBookInThisCategoryTxt.setVisibility(View.GONE);
             }
-        }else {
-            dashboardAdapter = new DashboardAdapter(DashboardActivity.this, dashboardModelArrayList);
-            allBooksRecyclerView.setAdapter(dashboardAdapter);
+        } else {
+            // If the exam name is empty, show all books (restore to the full list)
+            restoreOriginalList();
         }
-        dashboardAdapter.notifyDataSetChanged();
+    }
+    public void restoreOriginalList() {
+        // Update adapter to show the original list
+        dashboardAdapter.updateData(dashboardModelArrayList);
+        allBooksRecyclerView.setVisibility(View.VISIBLE);
+        noBookInThisCategoryTxt.setVisibility(View.GONE); // Hide the "No books" message if visible
+    }
+
+    public static ArrayList<DashboardModel> getDashboardModelArrayList() {
+        return dashboardModelArrayList;
     }
 
     @Override

@@ -12,8 +12,8 @@
         android:layout_margin="5dp"
         android:background="@drawable/rounded_corner_for_hardbookbg">
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/bookImageCardView"
             android:layout_width="match_parent"
@@ -23,8 +23,8 @@
             app:strokeWidth="0dp">
 
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/imgBook"
@@ -60,11 +60,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="5dp"
-                    android:gravity="center">
-
-                    <!-- Dynamic dots will be added here -->
-                </LinearLayout>
+                    android:gravity="center"/>
             </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>
             <TextView
@@ -94,47 +90,25 @@
                 android:layout_centerHorizontal="true"
                 android:textColor="@color/dark_grey"
             />
-            <LinearLayout
-                android:id="@+id/categoryLinearLayout"
+            <TextView
+                android:id="@+id/categoryTxtDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Category"
+                android:textSize="14sp"
                 android:layout_below="@id/bookAuthor"
-                android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_centerHorizontal="true">
-                <TextView
-                    android:id="@+id/categoryTxt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Category: "
-                    android:textSize="14sp"
-                    android:layout_below="@id/bookTitle"
-                    android:layout_marginTop="5dp"
-                    android:layout_centerHorizontal="true"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_weight="1"
-                    />
-                <TextView
-                    android:id="@+id/categoryTxtDisplay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Book Author"
-                    android:textSize="14sp"
-                    android:layout_below="@id/bookTitle"
-                    android:layout_marginTop="5dp"
-                    android:layout_centerHorizontal="true"
-                    android:textColor="@color/dark_grey"
-                    android:layout_weight="1"
-                    />
-            </LinearLayout>
+                android:layout_marginTop="5dp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/dark_grey"
+                android:layout_weight="1.40"
+                />
             <TextView
                 android:id="@+id/bookPriceInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:text="$10.00"
-                android:layout_below="@id/categoryLinearLayout"
+                android:layout_below="@id/categoryTxtDisplay"
                 android:textColor="@color/black"
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="10dp"

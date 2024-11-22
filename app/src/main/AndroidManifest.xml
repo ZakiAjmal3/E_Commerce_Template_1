@@ -16,6 +16,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".JoinAsAuthorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BulkOrderRegisterActivity"
+            android:exported="false" />
+        <activity
             android:name=".TermsAndConditionActivity"
             android:exported="false" />
         <activity
@@ -38,7 +47,8 @@
             android:exported="false" />
         <activity
             android:name=".CreateDeliveryAddressActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".CartViewActivity"
             android:exported="false" />
@@ -50,9 +60,6 @@
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SecondActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

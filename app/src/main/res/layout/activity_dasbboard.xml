@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".DashboardActivity">
+    tools:context=".DashboardActivity"
+    android:id="@+id/parentLayout">
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -44,10 +45,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_toEndOf="@id/imgMenu"
             android:text="CROWN PUBLICATIONS"
             android:textSize="20sp"
+            android:layout_centerVertical="true"
             android:textColor="@color/white"
             android:textAlignment="center"
             android:textStyle="bold"
@@ -56,18 +57,18 @@
             android:id="@+id/cartBtn"
             android:layout_width="35dp"
             android:layout_height="35dp"
+            android:layout_centerVertical="true"
             android:src="@drawable/ic_cart"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
-
             />
     </RelativeLayout>
 
     <ScrollView
+        android:id="@+id/scrollViewAboveBookRecycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@id/topBar">
 
         <RelativeLayout
@@ -109,21 +110,45 @@
                 android:layout_toRightOf="@id/browseExamNameTxt"
                 android:textStyle="bold"
                 android:textColor="@color/seed"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="5dp"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/examCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/browseExamNameTxt"
                 android:orientation="horizontal"
-                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:visibility="visible"/>
-
+        </RelativeLayout>
+    </ScrollView>
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_below="@id/scrollViewAboveBookRecycler"
+        android:layout_height="45dp"
+        android:background="@drawable/rounded_corner_for_searchview"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_centerVertical="true"
+        android:padding="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone"
+        />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/searchView">
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/booksRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/examCategory"
                 android:visibility="visible"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
@@ -133,18 +158,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="No Books in this Category"
-                android:layout_below="@id/examCategory"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
                 android:textStyle="bold"
                 android:textSize="18dp"
                 android:textColor="@color/md_theme_dark_onError"
                 android:visibility="gone"/>
+            </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/noDataLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/slider_cardView"
+                android:layout_below="@id/topBar"
                 android:background="@color/white"
                 android:translationY="20dp"
                 android:visibility="gone">
@@ -194,6 +219,4 @@
                     </LinearLayout>
                 </LinearLayout>
             </RelativeLayout>
-        </RelativeLayout>
-    </ScrollView>
 </RelativeLayout>

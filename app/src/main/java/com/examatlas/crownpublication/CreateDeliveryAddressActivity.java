@@ -459,9 +459,10 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
 
         billingAddressInputDialogBox.show();
         WindowManager.LayoutParams params = billingAddressInputDialogBox.getWindow().getAttributes();
-        params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
         params.gravity = Gravity.CENTER;
+
 
         // Set the window attributes
         billingAddressInputDialogBox.getWindow().setAttributes(params);
@@ -470,15 +471,13 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
         FrameLayout layout = (FrameLayout) billingAddressInputDialogBox.findViewById(android.R.id.content);
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) layout.getLayoutParams();
 
-        layoutParams.setMargins(0, 50, 0, 50);
+        layoutParams.setMargins(30, 50, 30, 50);
         layout.setLayoutParams(layoutParams);
 
         // Background and animation settings
         billingAddressInputDialogBox.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         billingAddressInputDialogBox.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
-        // Prevent dialog from closing when clicking outside
-        billingAddressInputDialogBox.setCancelable(false);
         billingAddressInputDialogBox.setCanceledOnTouchOutside(false);
 
     }

@@ -13,7 +13,9 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -49,11 +51,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.ViewHolder> {
     private final Context context;
-    private final ArrayList<DashboardModel> hardBookECommPurchaseModelArrayList;
+    private ArrayList<DashboardModel> hardBookECommPurchaseModelArrayList;
     private final ArrayList<DashboardModel> originalHardBookECommPurchaseModelArrayList;
     private final ArrayList<Boolean> heartToggleStates; // List to track heart states
     private String currentQuery = "";
@@ -120,7 +123,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
                         truncatedTitle = title.substring(0, 50) + "...";
                     }
                     // Set the truncated text
-                    holder.title.setText(truncatedTitle);
+                    holder.setHighlightedText(holder.title,truncatedTitle,currentQuery);
                 }
             }
         });
@@ -402,7 +405,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
             String lowerCaseQuery = query.toLowerCase();
             for (DashboardModel dashboardModel : originalHardBookECommPurchaseModelArrayList) {
                 if (dashboardModel.getTitle().toLowerCase().contains(lowerCaseQuery) ||
-                        dashboardModel.getContent().toLowerCase().contains(lowerCaseQuery) ||
+                        dashboardModel.getCategory().toLowerCase().contains(lowerCaseQuery) ||
                         dashboardModel.getTags().toLowerCase().contains(lowerCaseQuery) ||
                         dashboardModel.getPrice().toLowerCase().contains(lowerCaseQuery)) {
                     hardBookECommPurchaseModelArrayList.add(dashboardModel);
@@ -412,7 +415,11 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
         }
         notifyDataSetChanged();
     }
-
+    // Method to update the data set in the adapter
+    public void updateData(ArrayList<DashboardModel> newData) {
+        this.hardBookECommPurchaseModelArrayList = newData;
+        notifyDataSetChanged();  // Notify adapter that the data has changed
+    }
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView title, author, price,category;
         ImageView toggleHeartIcon;
@@ -431,6 +438,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
             addToCartBtn = itemView.findViewById(R.id.addToCartBtn);
             goToCartBtn = itemView.findViewById(R.id.goToCartBtn);
             dotsLinearLayout = itemView.findViewById(R.id.indicatorLayout);
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -488,5 +496,9 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
             }
             textView.setText(spannableString);
         }
+    }
+    public void updateOriginalList(ArrayList<DashboardModel> newList) {
+        originalHardBookECommPurchaseModelArrayList.clear();
+        originalHardBookECommPurchaseModelArrayList.addAll(newList);
     }
 }
