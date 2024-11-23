@@ -190,6 +190,7 @@ public class ProductDescriptionActivity extends AppCompatActivity {
         butNowBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                addToCartFunction();
                 Intent intent1 = new Intent(ProductDescriptionActivity.this,CartViewActivity.class);
                 startActivity(intent1);
                 finish();
@@ -230,7 +231,6 @@ public class ProductDescriptionActivity extends AppCompatActivity {
             dashboardAdapter = new DashboardAdapter(ProductDescriptionActivity.this, relatedWithCategoryDashboardModelArrayList);
             relatedBookRecyclerView.setAdapter(dashboardAdapter);
         }
-
     }
     Dialog drawerDialog;
     ImageView crossBtn;

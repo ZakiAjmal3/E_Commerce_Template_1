@@ -133,7 +133,7 @@ public class DashboardActivity extends AppCompatActivity {
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (TextUtils.isEmpty(searchView.getQuery())) {
+                if (!TextUtils.isEmpty(searchView.getQuery())) {
                     // When SearchView is clicked and it's empty, hide the whole layout
                     hideLayout();
                     openKeyboard();
@@ -150,7 +150,6 @@ public class DashboardActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (searchView.isShown() && !isPointInsideView(event.getRawX(), event.getRawY(), searchView)) {
-                        searchView.setIconified(true); // Collapse the search view
                         InputMethodManager imm = (InputMethodManager) DashboardActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0); // Hide the keyboard
 
@@ -252,19 +251,14 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (searchView.isIconified()) {
+        if (TextUtils.isEmpty(searchView.getQuery())) {
+            // If no query is present, show the layout again
+            showLayout();
             super.onBackPressed();
         } else {
-            if (TextUtils.isEmpty(searchView.getQuery())) {
-                // If no query is present, show the layout again
-                showLayout();
-                super.onBackPressed();
-            } else {
-                // If there's text, just close the keyboard and keep the layout hidden
-                searchView.setIconified(true);
-                InputMethodManager imm = (InputMethodManager) DashboardActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0); // Hide the keyboard
-            }
+            // If there's text, just close the keyboard and keep the layout hidden
+            InputMethodManager imm = (InputMethodManager) DashboardActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0); // Hide the keyboard
         }
     }
 
@@ -647,7 +641,7 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (sessionManager.IsLoggedIn()) {
-                    Intent intent = new Intent(DashboardActivity.this, CartViewActivity.class);
+                    Intent intent = new Intent(DashboardActivity.this, OrderHistoryActivity.class);
                     startActivity(intent);
                     drawerDialog.dismiss();
                 }else {

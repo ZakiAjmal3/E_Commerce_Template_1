@@ -130,7 +130,7 @@
         android:layout_width="match_parent"
         android:layout_below="@id/scrollViewAboveBookRecycler"
         android:layout_height="45dp"
-        android:background="@drawable/rounded_corner_for_searchview"
+        android:background="@drawable/rounded_corner_for_search_view"
         android:focusable="true"
         android:clickable="true"
         android:layout_centerVertical="true"
@@ -139,7 +139,8 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:visibility="gone"
+        android:visibility="visible"
+        app:iconifiedByDefault="false"
         />
             <RelativeLayout
                 android:layout_width="match_parent"

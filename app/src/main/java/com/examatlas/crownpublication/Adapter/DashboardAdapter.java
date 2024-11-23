@@ -63,6 +63,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
     String authToken;
     SessionManager sessionManager;
     ArrayList bookImageUrls;
+    SpannableStringBuilder spannableText;
 
     public DashboardAdapter(Context context, ArrayList<DashboardModel> hardBookECommPurchaseModelArrayList) {
         this.originalHardBookECommPurchaseModelArrayList = new ArrayList<>(hardBookECommPurchaseModelArrayList);
@@ -98,7 +99,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
 
         // Create the discount text
         String discountText = "(-" + discount + "%)";
-        SpannableStringBuilder spannableText = new SpannableStringBuilder();
+        spannableText = new SpannableStringBuilder();
         spannableText.append("₹" + purchasingPrice + " ");
         spannableText.append(spannableOriginalPrice);
         spannableText.append(" " + discountText);
@@ -407,7 +408,9 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
                 if (dashboardModel.getTitle().toLowerCase().contains(lowerCaseQuery) ||
                         dashboardModel.getCategory().toLowerCase().contains(lowerCaseQuery) ||
                         dashboardModel.getTags().toLowerCase().contains(lowerCaseQuery) ||
-                        dashboardModel.getPrice().toLowerCase().contains(lowerCaseQuery)) {
+                        dashboardModel.getPrice().toLowerCase().contains(lowerCaseQuery) ||
+                        dashboardModel.getAuthor().toLowerCase().contains(lowerCaseQuery) ||
+                        spannableText.toString().toLowerCase().contains(lowerCaseQuery)) {
                     hardBookECommPurchaseModelArrayList.add(dashboardModel);
                     heartToggleStates.add(false); // Ensure state is added for new entries
                 }

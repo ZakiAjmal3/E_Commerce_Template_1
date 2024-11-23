@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.examatlas.crownpublication.Adapter.extraAdapter.BookOrderSummaryItemsDetailsRecyclerViewAdapter;
 import com.examatlas.crownpublication.Models.OrderHistoryModel;
 import com.examatlas.crownpublication.Models.extraModels.BookOrderSummaryItemsDetailsRecyclerViewModel;
+import com.examatlas.crownpublication.OrderHistoryActivity;
 import com.examatlas.crownpublication.R;
+import com.examatlas.crownpublication.TrackinOrderActivity;
 
 import java.util.ArrayList;
 
@@ -91,6 +94,14 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         }
         holder.bookOrderSummaryItemsDetailsRecyclerViewAdapter = new BookOrderSummaryItemsDetailsRecyclerViewAdapter(context,holder.bookOrderSummaryItemsDetailsRecyclerViewModelArrayList);
         holder.orderItemRecyclerView.setAdapter(holder.bookOrderSummaryItemsDetailsRecyclerViewAdapter);
+
+        holder.trackTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, TrackinOrderActivity.class);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -98,7 +109,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         return orderHistoryModelsArrayList.size();
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView orderIdTxt, totalAmountTxt, statusTxt, methodTxt, shippingToAddressTxt, shippingNameTxt;
+        TextView trackTxt,orderIdTxt, totalAmountTxt, statusTxt, methodTxt, shippingToAddressTxt, shippingNameTxt;
         RecyclerView orderItemRecyclerView;
         ImageView copyImg;
         BookOrderSummaryItemsDetailsRecyclerViewModel bookOrderSummaryItemsDetailsRecyclerViewModel;
@@ -107,6 +118,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            trackTxt = itemView.findViewById(R.id.trackTxt);
             orderIdTxt = itemView.findViewById(R.id.orderIdTxt);
             totalAmountTxt = itemView.findViewById(R.id.priceTxt);
             statusTxt = itemView.findViewById(R.id.paidTxt);

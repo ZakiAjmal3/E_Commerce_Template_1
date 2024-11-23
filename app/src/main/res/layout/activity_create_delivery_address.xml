@@ -348,7 +348,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:elevation="10dp"
-        android:background="@drawable/rounded_corner_for_searchview"
+        android:background="@drawable/rounded_corner_for_delivery_bottom_layout"
         android:visibility="gone">
         <View
             android:id="@+id/line4"
