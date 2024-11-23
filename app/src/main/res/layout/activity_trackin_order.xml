@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center_horizontal">
+
+  <!-- Status Texts -->
+  <TextView
+      android:id="@+id/orderStatus"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Order Placed Successfully"
+      android:textSize="18sp"
+      android:textColor="@android:color/black"
+      android:layout_marginBottom="16dp"/>
+
+  <!-- Vertical ProgressBar -->
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="300dp"
+      android:orientation="vertical"
+      android:gravity="center"
+      android:layout_marginBottom="16dp">
+
+    <ProgressBar
+        android:id="@+id/verticalProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:progressDrawable="@drawable/custom_tracking_progress_bar"
+        android:max="100"
+        android:progress="0"/>
+  </LinearLayout>
+
+  <!-- Tracking Details -->
+  <TextView
+      android:id="@+id/deliveryStatusText"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Current Status"
+      android:textSize="16sp"
+      android:textColor="@android:color/black"
+      android:layout_marginTop="16dp"/>
+
+</RelativeLayout>
