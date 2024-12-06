@@ -25,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.crownpublication.Adapter.extraAdapter.BookOrderSummaryItemsDetailsRecyclerViewAdapter;
 import com.examatlas.crownpublication.Models.extraModels.BookOrderSummaryItemsDetailsRecyclerViewModel;
+import com.examatlas.crownpublication.Models.extraModels.OrderItemsArrayListModel;
 import com.examatlas.crownpublication.Utils.Constant;
 import com.examatlas.crownpublication.Utils.MySingleton;
 import com.examatlas.crownpublication.Utils.SessionManager;
@@ -64,7 +65,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
 
         Checkout.preload(getApplicationContext());
         Checkout checkout = new Checkout();
-        checkout.setKeyID("rzp_test_Py5aXtaPQ5j9nu");
+        checkout.setKeyID("rzp_live_B3tlB0LBuRXlgF");
 
         bookItemsSummaryRecyclerView = findViewById(R.id.bookItemsSummaryRecyclerView);
         bookItemsSummaryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -82,9 +83,9 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
         nameTxt = findViewById(R.id.nameTxt);
         shippingToTxt = findViewById(R.id.shippingToTxtDisplay);
 
-        totalAmount = Integer.parseInt(Objects.requireNonNull(getIntent().getStringExtra("totalAmount")));
+        totalAmount = Integer.parseInt(Objects.requireNonNull(getIntent().getStringExtra("amount")));
         orderId = Objects.requireNonNull(getIntent().getStringExtra("orderId"));
-        razorpayOrderID = Objects.requireNonNull(getIntent().getStringExtra("razorpay_order_id"));
+        razorpayOrderID = Objects.requireNonNull(getIntent().getStringExtra("razorpayOrderId"));
 
         sessionManager = new SessionManager(this);
         authToken = sessionManager.getUserData().get("authToken");
@@ -95,13 +96,13 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
         try {
             JSONObject options = new JSONObject();
 
-            options.put("name", "ExamAtlas");
+            options.put("name", "Crown Publications");
             options.put("description", "Reference No. #123456");
             options.put("image", "http://example.com/image/rzp.jpg");
-            options.put("order_id", orderId);//from response of step 3.
+            options.put("order_id", razorpayOrderID);
             options.put("theme.color", "#3399cc");
             options.put("currency", "INR");
-            options.put("amount", totalAmount);//pass amount in currency subunits
+            options.put("amount", totalAmount);
             options.put("prefill.email", userEmail);
             options.put("prefill.contact",userMobile);
             JSONObject retryObj = new JSONObject();
@@ -112,6 +113,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
             checkout.open(this, options);
 
         } catch(Exception e) {
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
         }
 
         copyImgBtn.setOnClickListener(new View.OnClickListener() {
@@ -228,10 +230,17 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                             if (status.equals("true")) {
 
                                 JSONObject jsonObject1 = response.getJSONObject("order");
+
                                 String orderID = jsonObject1.getString("_id");
+                                String shipRocketOrderId = jsonObject1.getString("orderId");
                                 String totalAmount = jsonObject1.getString("totalAmount");
                                 String paymentMethod = jsonObject1.getString("paymentMethod");
                                 String paymentStatus = jsonObject1.getString("status");
+                                String billingIdOfThisOrder = jsonObject1.getString("shippingDetailId");
+                                String billingDetailId = jsonObject1.getString("billingDetailId");
+                                String isShippingBillingSame = jsonObject1.getString("isShippingBillingSame");
+                                String razorpayOrderId = jsonObject1.getString("razorpayOrderId");
+                                String createdAt = jsonObject1.getString("createdAt");
 
                                 orderID = "Order ID: " + orderID;
 
@@ -250,8 +259,9 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                                 }
                                 paymentMethodTxt.setText(paymentMethod);
 
-                                JSONObject jsonObject2 = jsonObject1.getJSONObject("billingDetail");
+                                JSONObject jsonObject2 = jsonObject1.getJSONObject("shippingAddress");
 
+                                String addressType = jsonObject2.getString("addressType");
                                 String firstName = jsonObject2.getString("firstName");
                                 String lastName = jsonObject2.getString("lastName");
                                 String country = jsonObject2.getString("country");
@@ -269,14 +279,24 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                                 nameTxt.setText(completeName);
                                 shippingToTxt.setText(completeAddress);
 
-                                JSONArray jsonArray1 = jsonObject1.getJSONArray("items");
-                                for (int i = 0; i < jsonArray1.length(); i++) {
-                                    JSONObject jsonObject3 = jsonArray1.getJSONObject(i);
-                                    String itemName = jsonObject3.getString("title");
-                                    String itemPrice = jsonObject3.getString("sellPrice");
-                                    String itemQuantity = jsonObject3.getString("quantity");
-                                    bookOrderSummaryItemsDetailsRecyclerViewModel = new BookOrderSummaryItemsDetailsRecyclerViewModel(itemName,itemPrice,itemQuantity);
-                                    bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.add(bookOrderSummaryItemsDetailsRecyclerViewModel);
+
+
+                                JSONArray jsonArray2 = jsonObject1.getJSONArray("items");
+                                bookOrderSummaryItemsDetailsRecyclerViewModelArrayList = new ArrayList<>();
+                                for (int j = 0; j < jsonArray2.length(); j++) {
+                                    JSONObject jsonObject3 = jsonArray2.getJSONObject(j);
+
+                                    String itemId = jsonObject3.getString("_id");
+                                    String quantity = jsonObject3.getString("quantity");
+                                    String isInCart = jsonObject3.optString("IsInCart");
+
+                                    JSONObject jsonObject4 = jsonObject3.getJSONObject("bookId");
+
+                                    String title = jsonObject4.getString("title");
+                                    String sellPrice = jsonObject4.getString("sellPrice");
+
+                                    BookOrderSummaryItemsDetailsRecyclerViewModel orderItemsArrayListModel = new BookOrderSummaryItemsDetailsRecyclerViewModel(title,sellPrice,quantity);
+                                    bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.add(orderItemsArrayListModel);
                                 }
                                 if (!bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.isEmpty()) {
                                     mainLayout.setVisibility(View.VISIBLE);
@@ -293,7 +313,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
-                            Toast.makeText(BookOrderPaymentActivity.this, "Parsing error", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(BookOrderPaymentActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, new Response.ErrorListener() {

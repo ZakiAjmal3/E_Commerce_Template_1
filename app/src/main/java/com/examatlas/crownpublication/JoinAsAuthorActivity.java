@@ -142,6 +142,13 @@ public class JoinAsAuthorActivity extends AppCompatActivity {
                 // Set content type to application/x-www-form-urlencoded
                 return "application/x-www-form-urlencoded";
             }
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Add the Authorization header with the token
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + authToken);
+                return headers;
+            }
         };
         // Add the request to the Volley request queue
         MySingleton.getInstance(this).addToRequestQueue(stringRequest);

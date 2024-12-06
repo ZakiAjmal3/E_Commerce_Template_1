@@ -41,6 +41,9 @@ dependencies {
 
     implementation 'com.github.denzcoskun:ImageSlideshow:0.1.2'
     implementation 'com.razorpay:checkout:1.6.40'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.8'
+    implementation 'com.github.leandroborgesferreira:loading-button-android:2.3.0'
+    implementation 'com.github.vipulasri:timelineview:1.1.5'
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

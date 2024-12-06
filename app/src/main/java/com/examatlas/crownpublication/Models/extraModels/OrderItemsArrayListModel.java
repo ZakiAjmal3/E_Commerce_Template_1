@@ -1,23 +1,23 @@
 package com.examatlas.crownpublication.Models.extraModels;
 
 public class OrderItemsArrayListModel {
-    String cartId,itemId,title,sellPrice,quantity,bookId;
+    String bookId,itemId,title,sellPrice,quantity,isInCart;
 
-    public OrderItemsArrayListModel(String cartId, String itemId, String title, String sellPrice, String quantity, String bookId) {
-        this.cartId = cartId;
+    public OrderItemsArrayListModel(String bookId, String itemId, String title, String sellPrice, String quantity, String isInCart) {
+        this.bookId = bookId;
         this.itemId = itemId;
         this.title = title;
         this.sellPrice = sellPrice;
         this.quantity = quantity;
+        this.isInCart = isInCart;
+    }
+
+    public String getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(String bookId) {
         this.bookId = bookId;
-    }
-
-    public String getCartId() {
-        return cartId;
-    }
-
-    public void setCartId(String cartId) {
-        this.cartId = cartId;
     }
 
     public String getItemId() {
@@ -52,11 +52,11 @@ public class OrderItemsArrayListModel {
         this.quantity = quantity;
     }
 
-    public String getBookId() {
-        return bookId;
+    public String getIsInCart() {
+        return isInCart;
     }
 
-    public void setBookId(String bookId) {
-        this.bookId = bookId;
+    public void setIsInCart(String isInCart) {
+        this.isInCart = isInCart;
     }
 }

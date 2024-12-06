@@ -416,7 +416,7 @@ public class DashboardActivity extends AppCompatActivity {
                             boolean status = response.getBoolean("status");
 
                             if (status) {
-                                JSONArray jsonArray = response.getJSONArray("books");
+                                JSONArray jsonArray = response.getJSONArray("data");
                                 // Parse books directly here
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
@@ -468,6 +468,7 @@ public class DashboardActivity extends AppCompatActivity {
                                             jsonObject2.getString("createdAt"),
                                             jsonObject2.getString("updatedAt"),
                                             "false",
+                                            null,null,
                                             totalRows,totalPages,currentPage,pageSize
                                     );
                                     dashboardModelArrayList.add(model);
@@ -477,7 +478,6 @@ public class DashboardActivity extends AppCompatActivity {
                                 if (dashboardAdapter != null) {
                                     dashboardAdapter.updateOriginalList(dashboardModelArrayList);
                                 }
-
                                 updateUI();
                                 if (dashboardModelArrayList.isEmpty()) {
                                     noDataLayout.setVisibility(View.VISIBLE);
@@ -498,6 +498,7 @@ public class DashboardActivity extends AppCompatActivity {
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                            Toast.makeText(DashboardActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 },

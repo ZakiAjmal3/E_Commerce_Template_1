@@ -6,11 +6,11 @@ import com.examatlas.crownpublication.Models.extraModels.BookImageModels;
 import java.util.ArrayList;
 
 public class DashboardModel {
-    String bookID, title, keyword, price, sellPrice, author, category, content, subject, length, breadth, height, weight, isbn, tags, isInCart, createdAt, updatedAt, isInWishList;
+    String bookID, title, keyword, price, sellPrice, author, category, content, subject, length, breadth, height, weight, isbn, tags, isInCart, createdAt, updatedAt, isInWishList,edition,publication;
     ArrayList<BookImageModels> images;
     int totalRows, totalPages, currentPage, pageSize;
 
-    public DashboardModel(String bookID, String title, String keyword, String price, String sellPrice, String author, String category, String content, String subject, String length, String breadth, String height, String weight, String isbn, String tags, String isInCart, ArrayList<BookImageModels> images, String createdAt, String updatedAt, String isInWishList, int totalRows, int totalPages, int currentPage, int pageSize) {
+    public DashboardModel(String bookID, String title, String keyword, String price, String sellPrice, String author, String category, String content, String subject, String length, String breadth, String height, String weight, String isbn, String tags, String isInCart, ArrayList<BookImageModels> images, String createdAt, String updatedAt, String isInWishList, String edition, String publication, int totalRows, int totalPages, int currentPage, int pageSize) {
         this.bookID = bookID;
         this.title = title;
         this.keyword = keyword;
@@ -35,6 +35,24 @@ public class DashboardModel {
         this.totalPages = totalPages;
         this.currentPage = currentPage;
         this.pageSize = pageSize;
+        this.edition = edition;
+        this.publication = publication;
+    }
+
+    public String getEdition() {
+        return edition;
+    }
+
+    public void setEdition(String edition) {
+        this.edition = edition;
+    }
+
+    public String getPublication() {
+        return publication;
+    }
+
+    public void setPublication(String publication) {
+        this.publication = publication;
     }
 
     public String getBookID() {

@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -22,7 +21,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,10 +36,8 @@ import com.examatlas.crownpublication.Models.extraModels.BookImageModels;
 import com.examatlas.crownpublication.Utils.Constant;
 import com.examatlas.crownpublication.Utils.MySingleton;
 import com.examatlas.crownpublication.Utils.SessionManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.navigation.NavigationBarView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -245,7 +241,7 @@ public class CartViewActivity extends AppCompatActivity {
                         priceDetailRelativeLayout.setVisibility(View.GONE);
                         bottomStickyButtonLayout.setVisibility(View.GONE);
                         // Now you can use the message
-                        Toast.makeText(CartViewActivity.this, message, Toast.LENGTH_LONG).show();
+                        Toast.makeText(CartViewActivity.this, "No Items in the Cart", Toast.LENGTH_LONG).show();
 
                     } catch (Exception e) {
                         e.printStackTrace();

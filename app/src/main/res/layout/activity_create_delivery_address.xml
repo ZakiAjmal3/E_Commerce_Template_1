@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreateDeliveryAddressActivity">
+    tools:context=".CreateDeliveryAddressActivity"
+    >
     <RelativeLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -42,7 +43,7 @@
             android:textColor="@color/white"
             android:textAlignment="center"
             android:textStyle="bold"
-            android:visibility="visible" />
+            />
     </RelativeLayout>
     <ScrollView
         android:layout_width="match_parent"
@@ -88,21 +89,33 @@
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="@color/dark_grey"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="10dp"
-                    android:layout_below="@id/changeAddressBtn"/>
-
+                    android:layout_below="@id/deliveryToTxt"/>
+                <RelativeLayout
+                    android:id="@+id/deliveryAddressRelativeLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/line5">
+                <TextView
+                    android:id="@+id/noDeliveryAddressTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No Delivery Address"
+                    android:textColor="@color/black"
+                    android:layout_margin="10dp"
+                    />
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/deliveryAddressRecyclerView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/line5"
                     android:paddingBottom="10dp"/>
+                </RelativeLayout>
                 <Button
                     android:id="@+id/addNewAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/deliveryAddressRecyclerView"
+                    android:layout_below="@id/deliveryAddressRelativeLayout"
                     android:layout_marginLeft="35dp"
                     android:layout_marginRight="35dp"
                     android:text="Add New Address + "

@@ -20,11 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.examatlas.crownpublication.Adapter.extraAdapter.BookOrderSummaryItemsDetailsRecyclerViewAdapter;
 import com.examatlas.crownpublication.Models.OrderHistoryModel;
 import com.examatlas.crownpublication.Models.extraModels.BookOrderSummaryItemsDetailsRecyclerViewModel;
-import com.examatlas.crownpublication.OrderHistoryActivity;
 import com.examatlas.crownpublication.R;
-import com.examatlas.crownpublication.TrackinOrderActivity;
+import com.examatlas.crownpublication.TrackingOrderActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapter.ViewHolder> {
     private ArrayList<OrderHistoryModel> orderHistoryModelsArrayList;
@@ -98,10 +100,33 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         holder.trackTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, TrackinOrderActivity.class);
+                Intent intent = new Intent(context, TrackingOrderActivity.class);
+                intent.putExtra("createAt",orderHistoryModelsArrayList.get(position).getCreatedAt());
                 context.startActivity(intent);
             }
         });
+
+        try {
+            // Define the SimpleDateFormat to parse the date
+            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            isoFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Ensure it's in UTC
+
+            // Parse the ISO string into a Date object
+            Date date = isoFormat.parse(orderHistoryModelsArrayList.get(position).getCreatedAt());
+
+            // Define SimpleDateFormat for date and time with AM/PM format
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss a"); // 'a' is for AM/PM
+
+            // Separate the date and time
+            String formattedDate = dateFormat.format(date);
+            String formattedTime = timeFormat.format(date);
+            String dateAndTime = formattedDate + ", " + formattedTime;
+            holder.orderTimingTxt.setText(dateAndTime);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -109,7 +134,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         return orderHistoryModelsArrayList.size();
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView trackTxt,orderIdTxt, totalAmountTxt, statusTxt, methodTxt, shippingToAddressTxt, shippingNameTxt;
+        TextView trackTxt,orderIdTxt, totalAmountTxt, statusTxt, methodTxt,orderTimingTxt, shippingToAddressTxt, shippingNameTxt;
         RecyclerView orderItemRecyclerView;
         ImageView copyImg;
         BookOrderSummaryItemsDetailsRecyclerViewModel bookOrderSummaryItemsDetailsRecyclerViewModel;
@@ -123,6 +148,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             totalAmountTxt = itemView.findViewById(R.id.priceTxt);
             statusTxt = itemView.findViewById(R.id.paidTxt);
             methodTxt = itemView.findViewById(R.id.methodTxt);
+            orderTimingTxt = itemView.findViewById(R.id.orderTimingDisplayTxt);
             shippingToAddressTxt = itemView.findViewById(R.id.shippingToTxtDisplay);
             shippingNameTxt = itemView.findViewById(R.id.nameTxt);
             copyImg = itemView.findViewById(R.id.copyImg);

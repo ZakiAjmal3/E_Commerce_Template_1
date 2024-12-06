@@ -7,14 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     android:background="@color/md_theme_dark_errorContainer">
-
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
     <LinearLayout
         android:id="@+id/layout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
+        android:orientation="horizontal">
         <ImageView
             android:layout_width="70dp"
             android:layout_height="70dp"
@@ -30,6 +33,7 @@
             android:textColor="@color/white"/>
     </LinearLayout>
     <TextView
+        android:id="@+id/publicationTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="PUBLICATIONS"
@@ -38,6 +42,7 @@
         android:textColor="@color/white"
         android:layout_below="@id/layout1"
         android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

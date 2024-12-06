@@ -29,6 +29,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.examatlas.crownpublication.CreateDeliveryAddressActivity;
 import com.examatlas.crownpublication.R;
 import com.examatlas.crownpublication.Adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.crownpublication.CartViewActivity;
@@ -220,7 +221,11 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
 
                         if (success) {
                             holder.quantityTxt.setText(String.valueOf("Qty: " + quantity));
-                            ((CartViewActivity) context).fetchCartItems();
+                            if (context instanceof CartViewActivity) {
+                                ((CartViewActivity) context).fetchCartItems();
+                            }else if (context instanceof CreateDeliveryAddressActivity){
+                                ((CreateDeliveryAddressActivity) context).fetchCartItems();
+                            }
                         }
                     } catch (JSONException e) {
                         Toast.makeText(context, "Error processing response", Toast.LENGTH_SHORT).show();
@@ -282,8 +287,13 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
                             if (status) {
                                 Toast.makeText(context, "Item removed from the cart", Toast.LENGTH_SHORT).show();
                                 cartViewModelArrayList.remove(currentBook);
-                                ((CartViewActivity) context).setUpPriceDetails();
-                                ((CartViewActivity) context).checkItemsInCart();
+                                if (context instanceof CartViewActivity) {
+                                    ((CartViewActivity) context).setUpPriceDetails();
+                                    ((CartViewActivity) context).checkItemsInCart();
+                                }else if (context instanceof CreateDeliveryAddressActivity){
+                                    ((CreateDeliveryAddressActivity) context).checkItemsInCart();
+                                    ((CreateDeliveryAddressActivity) context).setUpPriceDetails();
+                                }
                                 notifyDataSetChanged();
                             }
                         } catch (JSONException e) {

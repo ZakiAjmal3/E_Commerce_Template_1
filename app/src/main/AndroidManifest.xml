@@ -16,7 +16,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31" >
         <activity
-            android:name=".TrackinOrderActivity"
+            android:name=".TrackingOrderActivity"
             android:exported="false" />
         <activity
             android:name=".ForgotPasswordActivity"

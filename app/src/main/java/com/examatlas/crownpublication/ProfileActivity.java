@@ -177,9 +177,28 @@ public class ProfileActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         try {
                             String status = response.getString("status");
-                            String message = response.getString("message");
-                            dialog.dismiss();
-                            Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
+                            if (status.equals("true")) {
+                                String message = response.getString("message");
+                                JSONObject jsonObject1 = response.getJSONObject("data");
+
+                                String userId = jsonObject1.getString("_id");
+                                userName = jsonObject1.getString("name");
+                                userEmail = jsonObject1.getString("email");
+                                userPhone = jsonObject1.getString("mobile");
+                                String role = jsonObject1.getString("role");
+                                String authToken = jsonObject1.getString("token");
+                                String createdAt = jsonObject1.getString("createdAt");
+                                String updatedAt = jsonObject1.getString("updatedAt");
+
+                                // Set the text in TextViews
+                                nameTxt.setText(userName != null ? userName : "N/A");
+                                emailTxt.setText(userEmail != null ? userEmail : "N/A");
+                                phoneTxt.setText(userPhone != null ? userPhone : "N/A");
+
+                                sessionManager.saveLoginDetails(userId, userName, userEmail, userPhone, role, authToken, createdAt, updatedAt);
+                                dialog.dismiss();
+                                Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
+                            }
                         } catch (JSONException e) {
                             Toast.makeText(ProfileActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                         }

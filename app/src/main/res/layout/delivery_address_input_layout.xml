@@ -30,12 +30,22 @@
             android:src="@drawable/ic_cross"
             android:layout_alignParentEnd="true"
             android:layout_margin="20dp"/>
+        <Spinner
+            android:id="@+id/addressTypeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corner_for_hardbookbg"
+            android:layout_below="@id/crossBtn"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:padding="15dp"/>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/firstNameLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="First Name"
-            android:layout_below="@id/crossBtn"
+            android:layout_below="@id/addressTypeSpinner"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="5dp"

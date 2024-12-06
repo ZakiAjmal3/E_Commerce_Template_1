@@ -224,7 +224,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
             //e.toString();
         }
     }
-    public void fetchAllOrderHistory(){
+    public void fetchAllOrderHistory() {
         String fetchOrderURl = Constant.BASE_URL + "payment/getOrdersByUserId/" + userID;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, fetchOrderURl, null,
                 new Response.Listener<JSONObject>() {
@@ -240,18 +240,30 @@ public class OrderHistoryActivity extends AppCompatActivity {
                                     JSONObject jsonObject1 = jsonArray1.getJSONObject(i);
 
                                     String orderID = jsonObject1.getString("_id");
+                                    String shipRocketOrderId = jsonObject1.getString("orderId");
                                     String totalAmount = jsonObject1.getString("totalAmount");
                                     String paymentMethod = jsonObject1.getString("paymentMethod");
                                     String paymentStatus = jsonObject1.getString("status");
-                                    String billingIdOfThisOrder = jsonObject1.getString("billingDetailId");
+                                    String shippingDetailId = jsonObject1.getString("shippingDetailId");
+                                    String billingDetailId = jsonObject1.getString("billingDetailId");
+                                    String isShippingBillingSame = jsonObject1.getString("isShippingBillingSame");
+                                    String razorpayOrderId = jsonObject1.getString("razorpayOrderId");
+                                    String createdAt = jsonObject1.getString("createdAt");
 
-                                    JSONObject jsonObject2 = jsonObject1.getJSONObject("billingDetail");
+                                    // Extract shipping address details
+                                    JSONObject jsonObject2 = jsonObject1.optJSONObject("shippingAddress");
+                                    if (jsonObject2 == null) {
+                                        // Handle case where shippingAddress is missing or null
+                                        Log.e("ShippingAddress", "Shipping address is null or missing for order: " + orderID);
+                                        continue; // Skip this order if shippingAddress is missing
+                                    }
 
+                                    String addressType = jsonObject2.getString("addressType");
                                     String firstName = jsonObject2.getString("firstName");
                                     String lastName = jsonObject2.getString("lastName");
                                     String country = jsonObject2.getString("country");
                                     String streetAddress = jsonObject2.getString("streetAddress");
-                                    String apartment = jsonObject2.getString("apartment");
+                                    String apartment = jsonObject2.optString("apartment", ""); // Safely handle empty apartment
                                     String city = jsonObject2.getString("city");
                                     String state = jsonObject2.getString("state");
                                     String zipCode = jsonObject2.getString("pinCode");
@@ -259,42 +271,47 @@ public class OrderHistoryActivity extends AppCompatActivity {
                                     String email = jsonObject2.getString("email");
 
                                     String completeName = firstName + " " + lastName;
-                                    String completeAddress = apartment + ", " + streetAddress + ", " + city + ", " + state + ", " + zipCode + ", " + country + ", " + phone + ", " + email + ".";
+                                    String completeAddress = (apartment.isEmpty() ? "" : apartment + ", ") + streetAddress + ", " + city + ", " + state + ", " + zipCode + ", " + country + ", " + phone + ", " + email + ".";
 
+                                    // Extract order items
                                     JSONArray jsonArray2 = jsonObject1.getJSONArray("items");
-                                    orderItemsArrayListModelArrayList = new ArrayList<>();
+                                    ArrayList<OrderItemsArrayListModel> orderItemsArrayListModelArrayList = new ArrayList<>();
                                     for (int j = 0; j < jsonArray2.length(); j++) {
                                         JSONObject jsonObject3 = jsonArray2.getJSONObject(j);
 
-                                        String cartId = jsonObject3.getString("cartId");
-                                        String itemId = jsonObject3.getString("itemId");
-                                        String itemName = jsonObject3.getString("title");
-                                        String itemPrice = jsonObject3.getString("sellPrice");
-                                        String itemQuantity = jsonObject3.getString("quantity");
-                                        String bookId = jsonObject3.getString("bookId");
+                                        String itemId = jsonObject3.getString("_id");
+                                        String quantity = jsonObject3.getString("quantity");
+                                        String isInCart = jsonObject3.optString("IsInCart");
 
-                                        OrderItemsArrayListModel orderItemsArrayListModel = new OrderItemsArrayListModel(cartId,itemId,itemName,itemPrice,itemQuantity,bookId);
+                                        JSONObject jsonObject4 = jsonObject3.getJSONObject("bookId");
+
+                                        String title = jsonObject4.getString("title"); // Correct field
+                                        String sellPrice = jsonObject4.getString("sellPrice");
+//                                        String bookId = jsonObject4.getString("_id");
+                                        String bookId = null;
+
+                                        OrderItemsArrayListModel orderItemsArrayListModel = new OrderItemsArrayListModel(bookId, itemId, title, sellPrice, quantity, isInCart);
                                         orderItemsArrayListModelArrayList.add(orderItemsArrayListModel);
                                     }
 
-                                    String razorpay_order_id = jsonObject1.getString("razorpay_order_id");
-                                    String razorpay_payment_id = jsonObject1.getString("razorpay_payment_id");
-                                    String razorpay_signature = jsonObject1.getString("razorpay_signature");
-
-                                    orderHistoryModel = new OrderHistoryModel(orderID,totalAmount,paymentMethod,paymentStatus,billingIdOfThisOrder,completeName,completeAddress,razorpay_order_id,razorpay_payment_id,razorpay_signature,orderItemsArrayListModelArrayList);
+                                    // Create and add OrderHistoryModel to the list
+                                    OrderHistoryModel orderHistoryModel = new OrderHistoryModel(orderID, shipRocketOrderId, totalAmount, paymentMethod, paymentStatus, shippingDetailId, isShippingBillingSame, addressType, completeName, completeAddress, razorpayOrderId, createdAt, orderItemsArrayListModelArrayList);
                                     orderHistoryModelArrayList.add(orderHistoryModel);
-                                }if (!orderHistoryModelArrayList.isEmpty()) {
+                                }
+
+                                // Check if orders are found
+                                if (!orderHistoryModelArrayList.isEmpty()) {
                                     progressBar.setVisibility(View.GONE);
                                     noDataTxt.setVisibility(View.GONE);
                                     orderItemsSummaryRecyclerView.setVisibility(View.VISIBLE);
                                     orderHistoryAdapter = new OrderHistoryAdapter(orderHistoryModelArrayList, OrderHistoryActivity.this);
                                     orderItemsSummaryRecyclerView.setAdapter(orderHistoryAdapter);
-                                }else {
+                                } else {
                                     progressBar.setVisibility(View.GONE);
                                     orderItemsSummaryRecyclerView.setVisibility(View.GONE);
                                     noDataTxt.setVisibility(View.VISIBLE);
                                 }
-                            }else {
+                            } else {
                                 progressBar.setVisibility(View.GONE);
                                 orderItemsSummaryRecyclerView.setVisibility(View.GONE);
                                 noDataTxt.setVisibility(View.VISIBLE);
@@ -302,7 +319,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
                             }
                         } catch (JSONException e) {
                             Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
-                            Toast.makeText(OrderHistoryActivity.this, "Parsing error", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OrderHistoryActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -312,11 +329,10 @@ public class OrderHistoryActivity extends AppCompatActivity {
                 String errorMessage = "Error retrieving order details.";
                 if (error.networkResponse != null) {
                     try {
-                        // Parse the error response
                         String jsonError = new String(error.networkResponse.data);
                         JSONObject jsonObject = new JSONObject(jsonError);
                         String message = jsonObject.optString("message", "Unknown error");
-                        errorMessage = message; // Update error message if available
+                        errorMessage = message;
                     } catch (Exception e) {
                         Log.e("JSON_ERROR", "Error parsing error JSON: " + e.getMessage());
                     }

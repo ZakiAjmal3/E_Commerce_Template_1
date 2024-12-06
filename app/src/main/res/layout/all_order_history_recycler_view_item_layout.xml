@@ -118,8 +118,7 @@
             android:layout_below="@id/statusLT"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="20dp">
+            android:layout_marginTop="15dp">
             <TextView
                 android:id="@+id/paymentMethodTxt"
                 android:layout_width="0dp"
@@ -135,6 +134,38 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="RazorPay"
+                android:textSize="14sp"
+                android:layout_weight="0.7"
+                android:gravity="end"
+                android:textColor="@color/black"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/orderTimingLT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2"
+            android:orientation="horizontal"
+            android:layout_below="@id/PaymentMethodLT"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp">
+            <TextView
+                android:id="@+id/orderTimingTxt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Order Recieving Time:"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_weight="1.3"
+                android:textColor="@color/black"
+                />
+            <TextView
+                android:id="@+id/orderTimingDisplayTxt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="123798254"
                 android:textSize="14sp"
                 android:layout_weight="0.7"
                 android:gravity="end"
@@ -171,7 +202,8 @@
             android:layout_marginRight="20dp"
             android:textColor="@color/seed"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"/>
         <TextView
             android:id="@+id/nameTxt"
             android:layout_width="wrap_content"
