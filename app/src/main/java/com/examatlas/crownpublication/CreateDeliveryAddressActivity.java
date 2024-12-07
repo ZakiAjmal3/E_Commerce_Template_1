@@ -70,7 +70,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
     TextView noDeliveryAddressTxt,priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
     String addressCombineStr = "";
     String billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress;
-    int totalSellPrice = 0, deliveryCharges;
+    int totalSellPrice = 0,totalAmountWithOutDeliveryCharges = 0, deliveryCharges;
     int totalItems,totalOriginalPrice = 0,totalDiscount = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -273,7 +273,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                     jsonObject.put("shippingCharges", deliveryCharges); // Delivery charges
                     jsonObject.put("shippingDetailId", selectedAddress.getBillingId()); // Shipping address ID
                     jsonObject.put("taxAmount", 0);
-                    jsonObject.put("totalAmount", String.valueOf(totalSellPrice)); // Total amount
+                    jsonObject.put("totalAmount", totalAmountWithOutDeliveryCharges); // Total amount
                     jsonObject.put("userId", userId); // User ID
 
                 } catch (JSONException e) {
@@ -780,6 +780,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
         // Initialize the price totals
         int totalOriginalPrice = 0;
         totalSellPrice = 0;
+        totalAmountWithOutDeliveryCharges = 0;
 
         for (int i = 0; i < cartViewModelArrayList.size(); i++) {
             int origPrice = Integer.parseInt(cartViewModelArrayList.get(i).getQuantity()) * Integer.parseInt(cartViewModelArrayList.get(i).getPrice());
@@ -788,6 +789,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
             // Accumulate prices
             totalOriginalPrice += origPrice;
             totalSellPrice += sellPrice;
+            totalAmountWithOutDeliveryCharges = totalSellPrice;
         }
 
         totalDiscount = totalOriginalPrice - totalSellPrice;

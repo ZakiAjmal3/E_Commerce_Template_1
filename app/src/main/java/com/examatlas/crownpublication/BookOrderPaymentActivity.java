@@ -234,6 +234,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                                 String orderID = jsonObject1.getString("_id");
                                 String shipRocketOrderId = jsonObject1.getString("orderId");
                                 String totalAmount = jsonObject1.getString("totalAmount");
+                                String finalAmount = jsonObject1.getString("finalAmount");
                                 String paymentMethod = jsonObject1.getString("paymentMethod");
                                 String paymentStatus = jsonObject1.getString("status");
                                 String billingIdOfThisOrder = jsonObject1.getString("shippingDetailId");
@@ -247,7 +248,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                                 referenceNoTxt.setText(orderID);
                                 orderIdTxt.setText(orderID);
 
-                                totalAmountTxt.setText("₹ " +totalAmount);
+                                totalAmountTxt.setText("₹ " +finalAmount);
 
                                 statusTxt.setText(paymentStatus);
                                 if (paymentStatus.equalsIgnoreCase("paid")){
