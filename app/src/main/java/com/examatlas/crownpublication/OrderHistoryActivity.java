@@ -242,6 +242,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
                                     String orderID = jsonObject1.getString("_id");
                                     String shipRocketOrderId = jsonObject1.getString("orderId");
                                     String totalAmount = jsonObject1.getString("totalAmount");
+                                    String finalAmount = jsonObject1.getString("finalAmount");
                                     String paymentMethod = jsonObject1.getString("paymentMethod");
                                     String paymentStatus = jsonObject1.getString("status");
                                     String shippingDetailId = jsonObject1.getString("shippingDetailId");
@@ -295,7 +296,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
                                     }
 
                                     // Create and add OrderHistoryModel to the list
-                                    OrderHistoryModel orderHistoryModel = new OrderHistoryModel(orderID, shipRocketOrderId, totalAmount, paymentMethod, paymentStatus, shippingDetailId, isShippingBillingSame, addressType, completeName, completeAddress, razorpayOrderId, createdAt, orderItemsArrayListModelArrayList);
+                                    OrderHistoryModel orderHistoryModel = new OrderHistoryModel(orderID, shipRocketOrderId, totalAmount,finalAmount, paymentMethod, paymentStatus, shippingDetailId, isShippingBillingSame, addressType, completeName, completeAddress, razorpayOrderId, createdAt, orderItemsArrayListModelArrayList);
                                     orderHistoryModelArrayList.add(orderHistoryModel);
                                 }
 

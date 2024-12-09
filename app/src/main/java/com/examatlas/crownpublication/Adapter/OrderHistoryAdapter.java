@@ -65,7 +65,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             }
         });
 
-        String amountStr = "₹ " + orderHistoryModelsArrayList.get(position).getTotalAmount();
+        String amountStr = "₹ " + orderHistoryModelsArrayList.get(position).getFinalAmount();
         holder.totalAmountTxt.setTextColor(ContextCompat.getColor(context, R.color.green));
         holder.totalAmountTxt.setText(amountStr);
 
