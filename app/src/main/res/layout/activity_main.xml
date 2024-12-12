@@ -13,25 +13,23 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true">
-    <LinearLayout
-        android:id="@+id/layout1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
         <ImageView
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:src="@drawable/ic_crown"
-            android:layout_marginRight="5dp"/>
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_logo"
+            android:layout_centerHorizontal="true"
+            />
         <TextView
+            android:id="@+id/crownTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="CROWN"
             android:textSize="50sp"
             android:textStyle="bold"
-            android:layout_marginTop="14dp"
+            android:layout_below="@id/logo"
+            android:layout_centerHorizontal="true"
             android:textColor="@color/white"/>
-    </LinearLayout>
     <TextView
         android:id="@+id/publicationTxt"
         android:layout_width="wrap_content"
@@ -40,7 +38,7 @@
         android:textSize="40sp"
         android:textStyle="bold"
         android:textColor="@color/white"
-        android:layout_below="@id/layout1"
+        android:layout_below="@id/crownTxt"
         android:layout_centerHorizontal="true"/>
     </RelativeLayout>
     <TextView

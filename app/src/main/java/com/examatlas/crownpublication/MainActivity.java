@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -12,26 +13,32 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.examatlas.crownpublication.Utils.SessionManager;
 
+import org.w3c.dom.Text;
+
 public class MainActivity extends AppCompatActivity {
     SessionManager sessionManager;
-    LinearLayout logoLayout;
+    TextView crownTxt;
     TextView publicationTxt;
+    ImageView logo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        logoLayout = findViewById(R.id.layout1);
+        crownTxt = findViewById(R.id.crownTxt);
         publicationTxt = findViewById(R.id.publicationTxt);
+        logo = findViewById(R.id.logo);
 
         sessionManager = new SessionManager(MainActivity.this);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                Animation loadAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.main_activity_logo_rotation);
                 Animation logo_object = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.toptobottom);
                 Animation logo_text_object = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.bottomtotop);
-                logoLayout.startAnimation(logo_object);
+                crownTxt.startAnimation(logo_object);
                 publicationTxt.startAnimation(logo_text_object);
+                logo.startAnimation(loadAnimation);
                 // Delay the startActivity to match the animation duration
                 new Handler().postDelayed(new Runnable() {
                     @Override
