@@ -225,7 +225,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
         }
     }
     public void fetchAllOrderHistory() {
-        String fetchOrderURl = Constant.BASE_URL + "payment/getOrdersByUserId/" + userID;
+        String fetchOrderURl = Constant.BASE_URL + "order";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, fetchOrderURl, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -235,20 +235,15 @@ public class OrderHistoryActivity extends AppCompatActivity {
                             String status = response.getString("success");
                             if (status.equals("true")) {
 
-                                JSONArray jsonArray1 = response.getJSONArray("orders");
+                                JSONArray jsonArray1 = response.getJSONArray("data");
                                 for (int i = 0; i < jsonArray1.length(); i++) {
                                     JSONObject jsonObject1 = jsonArray1.getJSONObject(i);
 
-                                    String orderID = jsonObject1.getString("_id");
-                                    String shipRocketOrderId = jsonObject1.getString("orderId");
+                                    String orderID = jsonObject1.getString("orderId");
                                     String totalAmount = jsonObject1.getString("totalAmount");
                                     String finalAmount = jsonObject1.getString("finalAmount");
                                     String paymentMethod = jsonObject1.getString("paymentMethod");
                                     String paymentStatus = jsonObject1.getString("status");
-                                    String shippingDetailId = jsonObject1.getString("shippingDetailId");
-                                    String billingDetailId = jsonObject1.getString("billingDetailId");
-                                    String isShippingBillingSame = jsonObject1.getString("isShippingBillingSame");
-                                    String razorpayOrderId = jsonObject1.getString("razorpayOrderId");
                                     String createdAt = jsonObject1.getString("createdAt");
 
                                     // Extract shipping address details
@@ -280,23 +275,28 @@ public class OrderHistoryActivity extends AppCompatActivity {
                                     for (int j = 0; j < jsonArray2.length(); j++) {
                                         JSONObject jsonObject3 = jsonArray2.getJSONObject(j);
 
-                                        String itemId = jsonObject3.getString("_id");
-                                        String quantity = jsonObject3.getString("quantity");
-                                        String isInCart = jsonObject3.optString("IsInCart");
+                                        JSONObject jsonObject4 = jsonObject3.getJSONObject("product");
 
-                                        JSONObject jsonObject4 = jsonObject3.getJSONObject("bookId");
-
+                                        String bookId = jsonObject4.getString("_id");
                                         String title = jsonObject4.getString("title"); // Correct field
-                                        String sellPrice = jsonObject4.getString("sellPrice");
-//                                        String bookId = jsonObject4.getString("_id");
-                                        String bookId = null;
+                                        String sellPrice = jsonObject4.getString("sellingPrice");
+                                        String quantity = jsonObject3.getString("quantity");
 
-                                        OrderItemsArrayListModel orderItemsArrayListModel = new OrderItemsArrayListModel(bookId, itemId, title, sellPrice, quantity, isInCart);
+                                        OrderItemsArrayListModel orderItemsArrayListModel = new OrderItemsArrayListModel(bookId, title, sellPrice, quantity);
                                         orderItemsArrayListModelArrayList.add(orderItemsArrayListModel);
                                     }
+                                    String razorpayOrderId = jsonObject1.getJSONObject("payment").getString("razorpayOrderId");
+                                    String shipRocketOrderId = "N/A";
 
+                                    if (jsonObject1.has("trackingDetail") && !jsonObject1.isNull("trackingDetail")) {
+                                        JSONObject trackingDetail = jsonObject1.optJSONObject("trackingDetail");
+                                        if (trackingDetail != null) {
+                                            // Check if "shipment_id" exists and is not empty
+                                            shipRocketOrderId = trackingDetail.optString("shipment_id", "N/A");
+                                        }
+                                    }
                                     // Create and add OrderHistoryModel to the list
-                                    OrderHistoryModel orderHistoryModel = new OrderHistoryModel(orderID, shipRocketOrderId, totalAmount,finalAmount, paymentMethod, paymentStatus, shippingDetailId, isShippingBillingSame, addressType, completeName, completeAddress, razorpayOrderId, createdAt, orderItemsArrayListModelArrayList);
+                                    OrderHistoryModel orderHistoryModel = new OrderHistoryModel(orderID, shipRocketOrderId, totalAmount,finalAmount, paymentMethod, paymentStatus, addressType, completeName, completeAddress, razorpayOrderId, createdAt, orderItemsArrayListModelArrayList);
                                     orderHistoryModelArrayList.add(orderHistoryModel);
                                 }
 

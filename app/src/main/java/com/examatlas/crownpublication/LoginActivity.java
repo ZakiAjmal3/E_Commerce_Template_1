@@ -1,12 +1,18 @@
 package com.examatlas.crownpublication;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,28 +39,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
-    TextView txtSignUp, txtForgotPass;
-    LinearLayout parentLayout;
+    TextView txtSignUp;
     ProgressBar progressBar;
-    EditText edtNumber, edtPassword;
+    EditText edtEmail;
     MaterialButton btnLogin;
-    private ImageView eyePassword;
-    private boolean isPasswordVisible = false;
-        private final String serverUrl = Constant.BASE_URL + "user/loginUser";
+    private final String serverUrl = Constant.BASE_URL + "otp/email";
     SessionManager sessionManager;
+    Dialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         txtSignUp = findViewById(R.id.adminNextBtn);
-        txtForgotPass = findViewById(R.id.txtForgotPass);
         btnLogin = findViewById(R.id.btnLogin);
         progressBar = findViewById(R.id.progressBar);
-        edtNumber = findViewById(R.id.edtNumber);
-        edtPassword = findViewById(R.id.edtPassword);
-        eyePassword = findViewById(R.id.eyePassword);
-        parentLayout = findViewById(R.id.parentLayout);
+        edtEmail = findViewById(R.id.edtNumber);
 
         sessionManager = new SessionManager(this);
 
@@ -65,47 +65,27 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        txtForgotPass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
-            }
-        });
-        eyePassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isPasswordVisible) {
-                    edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                    isPasswordVisible = false;
-                    eyePassword.setImageResource(R.drawable.eye_open); // Set the eye open drawable
-                } else {
-                    edtPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                    isPasswordVisible = true;
-                    eyePassword.setImageResource(R.drawable.eye_close); // Set the eye close drawable
-                }
-                edtPassword.setSelection(edtPassword.getText().length()); // Move cursor to the end
-            }
-        });
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String number = edtNumber.getText().toString().trim();
-                String password = edtPassword.getText().toString().trim();
+                progressDialog = new Dialog(LoginActivity.this);
+                progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                progressDialog.setContentView(R.layout.progress_bar_drawer);
+                progressDialog.setCancelable(false);
+                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                progressDialog.show();
+                String email = edtEmail.getText().toString().trim();
 
                 JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("mobile", number);
-                    jsonObject.put("password", password);
+                    jsonObject.put("email", email);
+                    jsonObject.put("action", "login");
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return;
                 }
-
-                Log.d("LoginPayload", jsonObject.toString());
-                ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
-                progressDialog.setMessage("Logging in...");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
 
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, serverUrl, jsonObject,
                         new Response.Listener<JSONObject>() {
@@ -113,33 +93,27 @@ public class LoginActivity extends AppCompatActivity {
                             public void onResponse(JSONObject response) {
                                 progressDialog.dismiss();
                                 try {
-                                    String status = response.getString("status");
+                                    String status = response.getString("success");
                                     String message = response.getString("message");
                                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
 
                                     if (status.equals("true")) {
-                                        String user_id = response.getString("userId");
-                                        String authToken = response.getString("token");
-                                        JSONObject userDataJson = response.getJSONObject("data");
-                                        String name = userDataJson.getString("name");
-                                        String mobile = userDataJson.getString("mobile");
-                                        String email = userDataJson.getString("email");
-                                        String role = userDataJson.getString("role");
-                                        String createdAt = userDataJson.getString("createdAt");
-                                        String updatedAt = userDataJson.getString("updatedAt");
-                                        sessionManager.saveLoginDetails(user_id,name,email,mobile,role,authToken,createdAt,updatedAt);
-                                        Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                                        Log.e("Success log", response.toString());
+                                        Intent intent = new Intent(LoginActivity.this, OtpActivity.class);
+                                        intent.putExtra("task", "login");
+                                        intent.putExtra("email", edtEmail.getText().toString().trim());
                                         startActivity(intent);
-                                        finish();
+                                        progressDialog.dismiss();
                                     }
                                 } catch (JSONException e) {
-                                    Toast.makeText(LoginActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                    Toast.makeText(LoginActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                            progressDialog.dismiss();
+                        progressDialog.dismiss();
                         String errorMessage = "Error: " + error.toString();
                         if (error.networkResponse != null) {
                             try {

@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
@@ -88,7 +89,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
         holder.itemView.setTag(currentBook);
 
         // Calculate prices and discount
-        String purchasingPrice = currentBook.getSellPrice();
+        String purchasingPrice = currentBook.getSellingPrice();
         String originalPrice = currentBook.getPrice();
         int discount = Integer.parseInt(purchasingPrice) * 100 / Integer.parseInt(originalPrice);
         discount = 100 - discount;
@@ -108,10 +109,11 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
         int startIndex = spannableText.length() - discountText.length();
         spannableText.setSpan(new ForegroundColorSpan(Color.GREEN), startIndex, spannableText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        String title = currentBook.getTitle();
+        String title = currentBook.getBookTitle();
         // Set text to holder
         holder.setHighlightedText(holder.title, title, currentQuery);
-
+        holder.title.setEllipsize(TextUtils.TruncateAt.END);
+        holder.title.setMaxLines(1);
 // Measure the number of lines after the text has been set
         holder.title.post(new Runnable() {
             @Override
@@ -128,17 +130,11 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
                 }
             }
         });
-
         holder.setHighlightedText(holder.author, currentBook.getAuthor(), currentQuery);
-        holder.setHighlightedText(holder.category, currentBook.getCategory(), currentQuery);
+        holder.setHighlightedText(holder.category, currentBook.getCategoryName(), currentQuery);
         holder.setHighlightedPrice(holder.price, spannableText, currentQuery);
 
-        if (currentBook.getIsInCart().equals("true")){
-            holder.addToCartBtn.setVisibility(View.GONE);
-            holder.goToCartBtn.setVisibility(View.VISIBLE);
-        }
-
-        BookImageAdapter bookImageAdapter = new BookImageAdapter(currentBook.getImages(),holder.viewPager,holder.dotsLinearLayout);
+        BookImageAdapter bookImageAdapter = new BookImageAdapter(currentBook.getBookImages(),holder.viewPager,holder.dotsLinearLayout);
         holder.viewPager.setAdapter(bookImageAdapter);
 
         // Set the heart icon based on the state
@@ -182,14 +178,14 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
 
                 if (sessionManager.IsLoggedIn()) {
 
-                    String userId = sessionManager.getUserData().get("user_id");
-                    String bookID = currentBook.getBookID();
-                    String addToCartUrl = Constant.BASE_URL + "cart/add";
+                    String bookID = currentBook.getBookId();
+                    String addToCartUrl = Constant.BASE_URL + "cart";
 
                     JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("userId", userId);
-                        jsonObject.put("bookId", bookID);
+                        jsonObject.put("quantity", 1);
+                        jsonObject.put("productId", bookID);
+                        jsonObject.put("type", "book");
                     } catch (JSONException e) {
                         e.printStackTrace();
                         return;
@@ -200,8 +196,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
                                 public void onResponse(JSONObject response) {
                                     try {
                                         String status = response.getString("success");
-                                        String message = response.getString("message");
-                                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, "Book added to Cart", Toast.LENGTH_SHORT).show();
                                         holder.addToCartBtn.setVisibility(View.GONE);
                                         holder.goToCartBtn.setVisibility(View.VISIBLE);
                                     } catch (JSONException e) {
@@ -271,7 +266,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
 
             String addBookUrl = Constant.BASE_URL + "wishlist/toggleWishlist";
             String userID = sessionManager.getUserData().get("user_id");
-            String bookID = currentBook.getBookID();
+            String bookID = currentBook.getBookId();
             JSONObject bookDetails = new JSONObject();
             try {
                 bookDetails.put("userId", userID);
@@ -405,8 +400,8 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
         } else {
             String lowerCaseQuery = query.toLowerCase();
             for (DashboardModel dashboardModel : originalHardBookECommPurchaseModelArrayList) {
-                if (dashboardModel.getTitle().toLowerCase().contains(lowerCaseQuery) ||
-                        dashboardModel.getCategory().toLowerCase().contains(lowerCaseQuery) ||
+                if (dashboardModel.getBookTitle().toLowerCase().contains(lowerCaseQuery) ||
+                        dashboardModel.getCategoryName().toLowerCase().contains(lowerCaseQuery) ||
                         dashboardModel.getTags().toLowerCase().contains(lowerCaseQuery) ||
                         dashboardModel.getPrice().toLowerCase().contains(lowerCaseQuery) ||
                         dashboardModel.getAuthor().toLowerCase().contains(lowerCaseQuery) ||
@@ -448,7 +443,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
                 public void onClick(View view) {
                     ArrayList<BookImageModels> bookImageModelsArrayList = new ArrayList<>();
                     ArrayList<String> imageURLArrayList = new ArrayList<>();
-                    bookImageModelsArrayList = hardBookECommPurchaseModelArrayList.get(getPosition()).getImages();
+                    bookImageModelsArrayList = hardBookECommPurchaseModelArrayList.get(getPosition()).getBookImages();
                     int length = bookImageModelsArrayList.size();
                     for (int i = 0 ; i < length;i++){
                         String bookImageUrl = bookImageModelsArrayList.get(i).getUrl();
@@ -456,14 +451,14 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
                     }
                     Intent intent = new Intent(context, ProductDescriptionActivity.class);
                     intent.putStringArrayListExtra("bookImage", imageURLArrayList);
-                    intent.putExtra("bookId", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getBookID());
-                    intent.putExtra("bookTitle", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getTitle());
+                    intent.putExtra("bookId", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getBookId());
+                    intent.putExtra("bookTitle", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getBookTitle());
                     intent.putExtra("bookPrice", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getPrice());
-                    intent.putExtra("bookSellPrice", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getSellPrice());
-                    intent.putExtra("bookCategory", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getCategory());
+                    intent.putExtra("bookSellPrice", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getSellingPrice());
+                    intent.putExtra("bookCategory", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getCategoryName());
                     intent.putExtra("bookAuthor", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getAuthor());
                     intent.putExtra("bookTags", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getTags());
-                    intent.putExtra("bookContent", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getContent());
+                    intent.putExtra("bookContent", hardBookECommPurchaseModelArrayList.get(getAdapterPosition()).getDescription());
                 itemView.getContext().startActivity(intent);
                 }
             });
@@ -499,9 +494,5 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
             }
             textView.setText(spannableString);
         }
-    }
-    public void updateOriginalList(ArrayList<DashboardModel> newList) {
-        originalHardBookECommPurchaseModelArrayList.clear();
-        originalHardBookECommPurchaseModelArrayList.addAll(newList);
     }
 }

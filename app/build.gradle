@@ -44,7 +44,8 @@ dependencies {
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.8'
     implementation 'com.github.leandroborgesferreira:loading-button-android:2.3.0'
     implementation 'com.github.vipulasri:timelineview:1.1.5'
-
+    implementation 'com.hbb20:ccp:2.7.1'
+    implementation 'io.github.chaosleung:pinview:1.4.4'
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

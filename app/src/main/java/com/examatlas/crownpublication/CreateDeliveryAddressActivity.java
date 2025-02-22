@@ -32,7 +32,6 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.crownpublication.Adapter.CartViewAdapter;
 import com.examatlas.crownpublication.Adapter.CreateDeliveryAddressAdapter;
@@ -63,15 +62,14 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
     ArrayList<CartViewModel> cartViewModelArrayList;
     ImageView backBtnTopBar;
     SessionManager sessionManager;
-    String cartUrl,authToken,userId;
+    String cartUrl = Constant.BASE_URL + "cart",authToken,userId;
     RelativeLayout noDataLayout,priceDetailRelativeLayout,deliveryAddressRelativeLayout,bottomStickyButtonLayout;
     ProgressBar progressBar;
     Button goToCheckout,changeAddressBtn,addNewAddress;
     TextView noDeliveryAddressTxt,priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
-    String addressCombineStr = "";
-    String billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress;
     int totalSellPrice = 0,totalAmountWithOutDeliveryCharges = 0, deliveryCharges;
     int totalItems,totalOriginalPrice = 0,totalDiscount = 0;
+    String addressId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,7 +103,6 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
         deliveryAddressRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         deliveryAddressRecyclerView.setVisibility(View.GONE);
         noDeliveryAddressTxt.setVisibility(View.VISIBLE);
-        cartUrl = Constant.BASE_URL + "cart/get/" + sessionManager.getUserData().get("user_id");
         authToken = sessionManager.getUserData().get("authToken");
         userId = sessionManager.getUserData().get("user_id");
 
@@ -182,7 +179,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
         bookOrderSummaryItemsDetailsRecyclerViewModelArrayList = new ArrayList<>();
 
         for (int i = 0; i<cartViewModelArrayList.size(); i++){
-            bookOrderSummaryItemsDetailsRecyclerViewModel = new BookOrderSummaryItemsDetailsRecyclerViewModel(cartViewModelArrayList.get(i).getTitle(),cartViewModelArrayList.get(i).getSellPrice(),cartViewModelArrayList.get(i).getQuantity());
+            bookOrderSummaryItemsDetailsRecyclerViewModel = new BookOrderSummaryItemsDetailsRecyclerViewModel(cartViewModelArrayList.get(i).getTitle(),cartViewModelArrayList.get(i).getSellingPrice(),cartViewModelArrayList.get(i).getQuantity());
             bookOrderSummaryItemsDetailsRecyclerViewModelArrayList.add(bookOrderSummaryItemsDetailsRecyclerViewModel);
         }
         bookOrderSummaryItemsDetailsRecyclerViewAdapter = new BookOrderSummaryItemsDetailsRecyclerViewAdapter(this,bookOrderSummaryItemsDetailsRecyclerViewModelArrayList);
@@ -199,83 +196,17 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
         proceedToPaymentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String checkOutURL = Constant.BASE_URL + "payment/checkout";
-//                String checkOutURL = "https://ecommerce-backend.crownpublications.in/api/payment/checkout";
-
+                String checkOutURL = Constant.BASE_URL + "order/checkout";
+                addressId = selectedAddress.getAddressId();
                 JSONObject jsonObject = new JSONObject();
                 try {
-                    // Create an array for cart items
-                    JSONArray cartItemsArray = new JSONArray();
-                    for (CartViewModel cartItem : cartViewModelArrayList) {
-                        JSONObject itemObject = new JSONObject();
-                        try {
-                            // Add book details
-                            JSONObject itemObject2 = new JSONObject();
-                            itemObject2.put("author", cartItem.getAuthor());
-                            itemObject2.put("category", cartItem.getCategory());
-                            itemObject2.put("content", cartItem.getContent());
-                            itemObject2.put("createdAt", cartItem.getCreatedAt());
-
-                            // Set book dimensions
-                            JSONObject itemObject3 = new JSONObject();
-                            itemObject3.put("length", cartItem.getLength());
-                            itemObject3.put("breadth", cartItem.getBreadth());
-                            itemObject3.put("height", cartItem.getHeight());
-                            itemObject2.put("dimension", itemObject3);
-
-                            // Add book images
-                            JSONArray bookImagesArray = new JSONArray();
-                            for (BookImageModels image : cartItem.getBookImageArrayList()) {
-                                JSONObject imageObject = new JSONObject();
-                                imageObject.put("url", image.getUrl());
-                                imageObject.put("filename", image.getFileName());
-                                imageObject.put("contentType", image.getContentType());
-                                imageObject.put("size", image.getSize());
-                                imageObject.put("uploadDate", image.getUploadDate());
-                                imageObject.put("_id", image.getId()); // Assuming image ID is present
-                                bookImagesArray.put(imageObject);
-                            }
-                            itemObject2.put("images", bookImagesArray);
-
-                            // Add other book details
-                            itemObject2.put("isbn", cartItem.getIsbn());
-                            itemObject2.put("keyword", cartItem.getKeyword());
-                            itemObject2.put("price", cartItem.getPrice());
-                            itemObject2.put("sellPrice", cartItem.getSellPrice());
-                            itemObject2.put("subject", cartItem.getSubject());
-                            itemObject2.put("tags", cartItem.getTags());
-                            itemObject2.put("title", cartItem.getTitle());
-                            itemObject2.put("updatedAt", cartItem.getUpdatedAt());
-                            itemObject2.put("weight", cartItem.getWeight());
-
-                            // Add the book details object to the item object
-                            itemObject.put("bookId", itemObject2);
-                            // Add cart item details
-                            itemObject.put("_id", cartItem.getCartId()); // Cart ID
-                            itemObject.put("IsInCart", cartItem.getIsInCart()); // Item in cart status
-                            itemObject.put("quantity", cartItem.getQuantity()); // Item quantity
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        cartItemsArray.put(itemObject); // Add cart item to array
-                    }
-
-                    // Add cart items to the main JSON object
-                    jsonObject.put("cartItems", cartItemsArray);
-                    // Set the billing detail ID from the selected address
-                    jsonObject.put("billingDetailId", selectedAddress.getBillingId());
-                    // Add other order details
-                    jsonObject.put("discounts", totalDiscount);
-                    jsonObject.put("finalAmount", totalSellPrice);
-                    jsonObject.put("isShippingBillingSame", true);
-                    jsonObject.put("paymentMethod", "Razorpay");
-                    jsonObject.put("shippingCharges", deliveryCharges); // Delivery charges
-                    jsonObject.put("shippingDetailId", selectedAddress.getBillingId()); // Shipping address ID
-                    jsonObject.put("taxAmount", 0);
-                    jsonObject.put("totalAmount", totalAmountWithOutDeliveryCharges); // Total amount
-                    jsonObject.put("userId", userId); // User ID
-
+                    jsonObject.put("addressId",addressId);
+                    jsonObject.put("discounts",totalDiscount);
+                    jsonObject.put("finalAmount",totalAmountWithOutDeliveryCharges);
+                    jsonObject.put("paymentMethod","Razorpay");
+                    jsonObject.put("totalAmount",totalOriginalPrice);
+                    jsonObject.put("taxAmount",0);
+                    jsonObject.put("shippingCharges",deliveryCharges);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -288,38 +219,15 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                                 Log.e("responseData", response.toString());
                                 try {
                                     String status = response.getString("success");
+                                    JSONObject paymentObj = response.getJSONObject("payment");
+                                    String orderId = paymentObj.getString("orderId");
+                                    String razorpayOrderId = paymentObj.getString("razorpayOrderId");
+                                    String finalAmount = paymentObj.getString("finalAmount");
                                     if (status.equals("true")) {
-                                        JSONObject orderJsonObject = response.getJSONObject("order");
-//                                        String razorpay_order_id = orderJsonObject.getString("id");
-//                                        String amount = orderJsonObject.getString("amount");
-//                                        String currency = orderJsonObject.getString("currency");
-//                                        String totalAmount = orderJsonObject.getString("amount");
-//                                        String amount_paid = orderJsonObject.getString("amount_paid");
-//                                        String attempts = orderJsonObject.getString("attempts");
-//                                        JSONObject orderDetailsJsonObject = orderJsonObject.getJSONObject("orderDetails");
-//                                        String userId = orderDetailsJsonObject.getString("userId");
-//                                        String paymentMethod = orderDetailsJsonObject.getString("paymentMethod");
-//                                        String billingDetailsId = orderDetailsJsonObject.getString("billingDetailId");
-//                                        String razorpayReceipt = orderDetailsJsonObject.getString("razorpayOrderId");
-//                                        String orderDetailsId = orderDetailsJsonObject.getString("_id");
-
-                                        JSONObject paymentObject = response.getJSONObject("payment");
-
-                                        String orderId = paymentObject.getString("orderId");
-                                        String razorpayOrderId = paymentObject.getString("razorpayOrderId");
-                                        String currency = paymentObject.getString("currency");
-                                        String amount = paymentObject.getString("finalAmount");
-                                        String paymentMethod = paymentObject.getString("method");
-
-                                        // Proceed to the payment activity
                                         Intent intent = new Intent(CreateDeliveryAddressActivity.this, BookOrderPaymentActivity.class);
+                                        intent.putExtra("amount", finalAmount);
                                         intent.putExtra("orderId", orderId);
                                         intent.putExtra("razorpayOrderId", razorpayOrderId);
-                                        intent.putExtra("amount", amount);
-                                        intent.putExtra("currency", currency);
-                                        intent.putExtra("userId", userId);
-                                        intent.putExtra("paymentMethod", paymentMethod);
-                                        intent.putExtra("razorpay_order_id", razorpayOrderId);
                                         startActivity(intent);
                                     }
                                 } catch (JSONException e) {
@@ -384,64 +292,72 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
     }
 
     private void getBillingAddress() {
-        String getAddressURL = Constant.BASE_URL + "billing/billing/user/" + userId;
-
-        JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(Request.Method.GET, getAddressURL, null,
-                new Response.Listener<JSONArray>() {
+        String addressURL = Constant.BASE_URL + "address";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, addressURL, null,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONArray response) {
+                    public void onResponse(JSONObject response) {
                         try {
-                            createDeliveryAddressModelArrayList.clear();
-                            for (int i = 0;i<response.length();i++){
-                                JSONObject jsonObject = response.getJSONObject(i);
-                                billingId = jsonObject.getString("_id");
-                                firstName = jsonObject.getString("firstName");
-                                lastName = jsonObject.getString("lastName");
-                                houseNoOrApartmentNo = jsonObject.getString("apartment");
-                                streetAddress = jsonObject.getString("streetAddress");
-                                townCity = jsonObject.getString("city");
-                                state = jsonObject.getString("state");
-                                pinCode = jsonObject.getString("pinCode");
-                                countryName = jsonObject.getString("country");
-                                phone = jsonObject.getString("phone");
-                                emailAddress = jsonObject.getString("email");
+                            Log.e("success",response.toString());
+                            boolean status = response.getBoolean("success");
+                            if (status){
+                                JSONArray jsonArray = response.getJSONArray("data");
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                    String addressId = jsonObject.getString("_id");
+                                    String addressType = jsonObject.getString("addressType");
+                                    String firstName = jsonObject.getString("firstName");
+                                    String lastName = jsonObject.getString("lastName");
+                                    String country = jsonObject.getString("country");
+                                    String streetAddress = jsonObject.getString("streetAddress");
+                                    String apartment = jsonObject.getString("apartment");
+                                    String city = jsonObject.getString("city");
+                                    String state = jsonObject.getString("state");
+                                    String pinCode = jsonObject.getString("pinCode");
+                                    String phone = jsonObject.getString("phone");
+                                    String email = jsonObject.getString("email");
+                                    String isDefault = jsonObject.getString("isDefault");
 
-                                createDeliveryAddressModel = new CreateDeliveryAddressModel(billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress);
-                                createDeliveryAddressModelArrayList.add(createDeliveryAddressModel);
-
-                                addressCombineStr = firstName +" " + lastName + ", " + houseNoOrApartmentNo + ", " + streetAddress + ", " + townCity + ", " + state + ", " + pinCode + ", " + countryName + ", " + phone + ", " + emailAddress;
+                                    createDeliveryAddressModel = new CreateDeliveryAddressModel(addressId,firstName,lastName,apartment,streetAddress,city,state,pinCode,country,phone,email,addressType,isDefault);
+                                    createDeliveryAddressModelArrayList.add(createDeliveryAddressModel);
+                                }
+                                if (!createDeliveryAddressModelArrayList.isEmpty()) {
+                                    noDeliveryAddressTxt.setVisibility(View.GONE);
+                                    deliveryAddressRecyclerView.setVisibility(View.VISIBLE);
+                                    createDeliveryAddressAdapter = new CreateDeliveryAddressAdapter(CreateDeliveryAddressActivity.this, createDeliveryAddressModelArrayList);
+                                    deliveryAddressRecyclerView.setAdapter(createDeliveryAddressAdapter);
+                                }else {
+                                    noDeliveryAddressTxt.setVisibility(View.VISIBLE);
+                                    deliveryAddressRecyclerView.setVisibility(View.GONE);
+                                }
                             }
-                            createDeliveryAddressAdapter = new CreateDeliveryAddressAdapter(CreateDeliveryAddressActivity.this, createDeliveryAddressModelArrayList);
-                            deliveryAddressRecyclerView.setAdapter(createDeliveryAddressAdapter);
-                            changeEditAddressBtnClickability();
-                            deliveryAddressRecyclerView.setVisibility(View.VISIBLE);
-                            noDeliveryAddressTxt.setVisibility(View.GONE);
                         } catch (JSONException e) {
-                            Log.e("JSON_ERROR", e.getMessage());
-                            deliveryAddressRecyclerView.setVisibility(View.GONE);
-                            noDeliveryAddressTxt.setVisibility(View.VISIBLE);
+                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                String errorMessage = error.toString();
+                Log.e("error",error.toString());
+                String errorMessage = "Error: " + error.toString();
                 if (error.networkResponse != null) {
                     try {
-                        deliveryAddressRecyclerView.setVisibility(View.GONE);
-                        noDeliveryAddressTxt.setVisibility(View.VISIBLE);
                         // Parse the error response
                         String jsonError = new String(error.networkResponse.data);
                         JSONObject jsonObject = new JSONObject(jsonError);
                         String message = jsonObject.optString("message", "Unknown error");
+                        noDataLayout.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        bookCartRecyclerView.setVisibility(View.GONE);
+                        priceDetailRelativeLayout.setVisibility(View.GONE);
+                        bottomStickyButtonLayout.setVisibility(View.GONE);
                         // Now you can use the message
-//                        Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_LONG).show();
-                    } catch (Exception e) {
+                        Toast.makeText(CreateDeliveryAddressActivity.this, "No Items in the Cart", Toast.LENGTH_LONG).show();
 
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                Log.e("LoginActivity", errorMessage);
             }
         }) {
             @Override
@@ -458,7 +374,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
     EditText firstNameEditText,lastNameEditText,houseNoOrApartmentNoEditText,streetAddressEditText,townCityEditText,stateEditText,pinCodeEditText,countryNameEditText,phoneEditText,emailAddressEditText;
     Button saveAndContinueBtn;
     ImageView crossBtn;
-    String [] addressTypeList = {"Select Address Type", "SHIPPING ADDRESS","BILLING ADDRESS","SAME FOR BOTH"};
+    String [] addressTypeList = {"Select Address Type", "HOME","OFFICE"};
     Spinner addressTypeSpinner;
     String addressTypeString = "";
     private void openPopUpAddAddress(CreateDeliveryAddressModel selectedAddress) {
@@ -490,12 +406,10 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String selectedAddressType = addressTypeList[i];
-                if (selectedAddressType.equals("SHIPPING ADDRESS")){
-                    addressTypeString = "shipping";
-                } else if (selectedAddressType.equals("BILLING ADDRESS")) {
-                    addressTypeString = "billing";
-                }else {
-                    addressTypeString = "same";
+                if (selectedAddressType.equals("HOME")){
+                    addressTypeString = "HOME";
+                } else if (selectedAddressType.equals("OFFICE")) {
+                    addressTypeString = "OFFICE";
                 }
             }
 
@@ -592,7 +506,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
 
                 // If everything is valid, proceed with the appropriate action
                 if (saveAndContinueBtn.getText().toString().equals("Update")) {
-                    updateBillingAddress(addressTypeString, firstName, lastName, houseNoOrApartmentNo, streetAddress, townCity, state, pinCode, countryName, phone, emailAddress, billingAddressInputDialogBox, selectedAddress.getBillingId());
+                    updateBillingAddress(addressTypeString, firstName, lastName, houseNoOrApartmentNo, streetAddress, townCity, state, pinCode, countryName, phone, emailAddress, billingAddressInputDialogBox, selectedAddress.getAddressId());
                 } else {
                     createBillingAddress(addressTypeString, firstName, lastName, houseNoOrApartmentNo, streetAddress, townCity, state, pinCode, countryName, phone, emailAddress, billingAddressInputDialogBox);
                 }
@@ -626,12 +540,11 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
 
     private void updateBillingAddress(String addressTypeString,String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress, Dialog billingAddressInputDialogBox, String billingId) {
 
-        String createBillingURL = Constant.BASE_URL + "billing/billing/updatebilling/" + userId + "/" + billingId;
+        String createBillingURL = Constant.BASE_URL + "address";
 
         JSONObject billingDetailsObject = new JSONObject();
         try {
-            billingDetailsObject.put("userId", userId);
-//            billingDetailsObject.put("addressType", addressTypeString);
+            billingDetailsObject.put("addressType", addressTypeString);
             billingDetailsObject.put("firstName", firstName);
             billingDetailsObject.put("lastName", lastName);
             billingDetailsObject.put("apartment", houseNoOrApartmentNo);
@@ -649,12 +562,12 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
             return;
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, createBillingURL, billingDetailsObject,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, createBillingURL, billingDetailsObject,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String status = response.getString("status");
+                            String status = response.getString("success");
                             String message = response.getString("message");
                             Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_SHORT).show();
 
@@ -700,12 +613,11 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
     }
 
     private void createBillingAddress(String addressTypeString,String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress,Dialog billingAddressInputDialogBox) {
-        String createBillingURL = Constant.BASE_URL + "billing/createBillingDetail";
+        String createBillingURL = Constant.BASE_URL + "address";
 
         JSONObject billingDetailsObject = new JSONObject();
         try {
-            billingDetailsObject.put("userId", userId);
-//            billingDetailsObject.put("addressType", addressTypeString);
+            billingDetailsObject.put("addressType", addressTypeString);
             billingDetailsObject.put("firstName", firstName);
             billingDetailsObject.put("lastName", lastName);
             billingDetailsObject.put("apartment", houseNoOrApartmentNo);
@@ -716,7 +628,6 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
             billingDetailsObject.put("country", countryName);
             billingDetailsObject.put("phone", phone);
             billingDetailsObject.put("email", emailAddress);
-
         }
         catch (JSONException e){
             e.printStackTrace();
@@ -728,7 +639,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String status = response.getString("status");
+                            String status = response.getString("success");
                             String message = response.getString("message");
                             Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_SHORT).show();
 
@@ -778,13 +689,13 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
         totalItems = cartViewModelArrayList.size();
 
         // Initialize the price totals
-        int totalOriginalPrice = 0;
+        totalOriginalPrice = 0;
         totalSellPrice = 0;
         totalAmountWithOutDeliveryCharges = 0;
 
         for (int i = 0; i < cartViewModelArrayList.size(); i++) {
             int origPrice = Integer.parseInt(cartViewModelArrayList.get(i).getQuantity()) * Integer.parseInt(cartViewModelArrayList.get(i).getPrice());
-            int sellPrice = Integer.parseInt(cartViewModelArrayList.get(i).getQuantity()) * Integer.parseInt(cartViewModelArrayList.get(i).getSellPrice());
+            int sellPrice = Integer.parseInt(cartViewModelArrayList.get(i).getQuantity()) * Integer.parseInt(cartViewModelArrayList.get(i).getSellingPrice());
 
             // Accumulate prices
             totalOriginalPrice += origPrice;
@@ -831,39 +742,34 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                                 progressBar.setVisibility(View.GONE);
 
 
-                                JSONObject jsonObject = response.getJSONObject("cart");
+                                JSONObject jsonObject = response.getJSONObject("data");
                                 String cartId = jsonObject.getString("_id");
                                 JSONArray jsonArray = jsonObject.getJSONArray("items");
                                 cartViewModelArrayList.clear(); // Clear the list before adding new items
                                 for (int i = 0; i < jsonArray.length(); i++) {
 
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-                                    String bookIdData = jsonObject2.getString("bookId");
-                                    if (bookIdData == null || bookIdData.equals("null"))
-                                        continue;
-                                    String itemId = jsonObject2.getString("_id");
                                     String quantity = jsonObject2.getString("quantity");
-                                    String isInCart = jsonObject2.getString("IsInCart");
+                                    String type = jsonObject2.getString("type");
 
-                                    JSONObject jsonObject3 = jsonObject2.getJSONObject("bookId");
+                                    JSONObject jsonObject3 = jsonObject2.getJSONObject("product");
 
                                     String bookId = jsonObject3.getString("_id");
                                     String title = jsonObject3.getString("title");
-                                    String keyword = jsonObject3.getString("keyword");
+                                    String sku = jsonObject3.getString("sku");
+                                    String slug = jsonObject3.getString("slug");
+                                    String publication = jsonObject3.getString("publication");
+                                    String stock = jsonObject3.getString("stock");
                                     String price = jsonObject3.getString("price");
-                                    String sellPrice = jsonObject3.getString("sellPrice");
+                                    String sellingPrice = jsonObject3.getString("sellingPrice");
+                                    String description = jsonObject3.getString("description");
                                     String author = jsonObject3.getString("author");
-                                    String category = jsonObject3.getString("category");
-                                    String content = jsonObject3.getString("content");
-                                    String subject = jsonObject3.getString("subject");
+                                    String categoryId = jsonObject3.getString("categoryId");
+                                    String subCategoryId = jsonObject3.getString("subCategoryId");
+                                    String isActive = jsonObject3.getString("isActive");
+                                    String language = jsonObject3.getString("language");
+                                    String edition = jsonObject3.getString("edition");
 
-                                    JSONObject jsonObject5 = jsonObject3.getJSONObject("dimension");
-                                    String length = jsonObject5.getString("length");
-                                    String height = jsonObject5.getString("height");
-                                    String breadth = jsonObject5.getString("breadth");
-
-                                    String weight = jsonObject3.getString("weight");
-                                    String isbn = jsonObject3.getString("isbn");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -892,10 +798,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                                         bookImageArrayList.add(bookImageModels);
                                     }
 
-                                    String createdDate = jsonObject3.getString("createdAt");
-                                    String updatedAt = jsonObject3.getString("updatedAt");
-
-                                    cartViewModel = new CartViewModel(cartId, bookId, title, keyword, price, sellPrice, author, category, content, subject, length, height, breadth, weight, isbn, tags.toString(), bookImageArrayList, createdDate, updatedAt, quantity, isInCart, itemId);
+                                    cartViewModel = new CartViewModel(cartId,quantity,type,bookId,title,sku,slug,publication,stock,price,sellingPrice,description,author,categoryId,subCategoryId,isActive,language,edition,tags.toString(),bookImageArrayList);
                                     cartViewModelArrayList.add(cartViewModel);
                                 }
                                 // If you have already created the adapter, just notify the change

@@ -80,7 +80,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
         holder.author.setText(currentBook.getAuthor());
 
         // Calculate prices and discounts if applicable
-        String purchasingPrice = currentBook.getSellPrice(); // Assuming this is the selling price
+        String purchasingPrice = currentBook.getSellingPrice(); // Assuming this is the selling price
         String originalPrice = currentBook.getPrice(); // You need to ensure you have the original price
         int discount = Integer.parseInt(purchasingPrice) * 100 / Integer.parseInt(originalPrice);
         discount = 100 - discount;
@@ -109,7 +109,8 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
         // Set quantity
         holder.quantityTxt.setText("Qty: " + currentBook.getQuantity());
 
-        holder.quantityTxt.setOnClickListener(view -> showQuantityOptions(currentBook, holder));
+
+//        holder.quantityTxt.setOnClickListener(view -> showQuantityOptions(currentBook, holder));
 
         holder.deleteBookBtn.setOnClickListener(view -> new MaterialAlertDialogBuilder(context)
                 .setTitle("Delete Item")
@@ -120,23 +121,23 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
     }
 
 
-    private void showQuantityOptions(CartViewModel currentBook, ViewHolder holder) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Select Quantity")
-                .setItems(quantityArray, (dialog, which) -> {
-                    String selectedQuantity = quantityArray[which];
-
-                    if (selectedQuantity.equals("more")) {
-                        showCustomQuantityDialog(currentBook, holder);
-                    } else {
-                        int quantity = Integer.parseInt(selectedQuantity);
-                        holder.quantityTxt.setText("Qty: " + selectedQuantity);
-                        updateQuantity(currentBook, quantity, holder);
-                    }
-                });
-
-        builder.create().show();
-    }
+//    private void showQuantityOptions(CartViewModel currentBook, ViewHolder holder) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//        builder.setTitle("Select Quantity")
+//                .setItems(quantityArray, (dialog, which) -> {
+//                    String selectedQuantity = quantityArray[which];
+//
+//                    if (selectedQuantity.equals("more")) {
+//                        showCustomQuantityDialog(currentBook, holder);
+//                    } else {
+//                        int quantity = Integer.parseInt(selectedQuantity);
+//                        holder.quantityTxt.setText("Qty: " + selectedQuantity);
+//                        updateQuantity(currentBook, quantity, holder);
+//                    }
+//                });
+//
+//        builder.create().show();
+//    }
 
     private void showCustomQuantityDialog(CartViewModel currentBook, ViewHolder holder) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -173,8 +174,8 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
                     return;
                 }
 
-                holder.quantityTxt.setText("Qty: " + quantity);
-                updateQuantity(currentBook, quantity, holder);
+//                holder.quantityTxt.setText("Qty: " + quantity);
+//                updateQuantity(currentBook, quantity, holder);
             } catch (NumberFormatException e) {
                 Toast.makeText(context, "Invalid quantity", Toast.LENGTH_SHORT).show();
             }
@@ -185,100 +186,76 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
     }
 
 
-    private void updateQuantity(CartViewModel currentBook, int quantity, ViewHolder holder) {
-        holder.quantityProgressbar.setVisibility(View.VISIBLE);
-        holder.quantityTxt.setVisibility(View.GONE);
-
-        String updateUrl = Constant.BASE_URL + "cart/update";
-        String userId = sessionManager.getUserData().get("user_id");
-        String itemId = currentBook.getItemId();
-
-        if (userId == null || itemId == null) {
-            Toast.makeText(context, "User ID or Item ID is null", Toast.LENGTH_LONG).show();
-            holder.quantityProgressbar.setVisibility(View.GONE);
-            holder.quantityTxt.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("userId", userId);
-            jsonObject.put("itemId", itemId);
-            jsonObject.put("quantity", quantity);
-        } catch (JSONException e) {
-            Toast.makeText(context, "Error creating JSON", Toast.LENGTH_SHORT).show();
-            holder.quantityProgressbar.setVisibility(View.GONE);
-            holder.quantityTxt.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, updateUrl, jsonObject,
-                response -> {
-                    try {
-                        boolean success = response.getBoolean("success");
-                        String message = response.getString("message");
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-
-                        if (success) {
-                            holder.quantityTxt.setText(String.valueOf("Qty: " + quantity));
-                            if (context instanceof CartViewActivity) {
-                                ((CartViewActivity) context).fetchCartItems();
-                            }else if (context instanceof CreateDeliveryAddressActivity){
-                                ((CreateDeliveryAddressActivity) context).fetchCartItems();
-                            }
-                        }
-                    } catch (JSONException e) {
-                        Toast.makeText(context, "Error processing response", Toast.LENGTH_SHORT).show();
-                    } finally {
-                        holder.quantityProgressbar.setVisibility(View.GONE);
-                        holder.quantityTxt.setVisibility(View.VISIBLE);
-                    }
-                },
-                error -> {
-                    Toast.makeText(context, "Error: " + error.toString(), Toast.LENGTH_LONG).show();
-                    holder.quantityProgressbar.setVisibility(View.GONE);
-                    holder.quantityTxt.setVisibility(View.VISIBLE);
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                if (authToken != null && !authToken.isEmpty()) {
-                    headers.put("Authorization", "Bearer " + authToken);
-                }
-                return headers;
-            }
-        };
-        MySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
-    }
+//    private void updateQuantity(CartViewModel currentBook, int quantity, ViewHolder holder) {
+//        holder.quantityProgressbar.setVisibility(View.VISIBLE);
+//        holder.quantityTxt.setVisibility(View.GONE);
+//
+//        String updateUrl = Constant.BASE_URL + "cart/update";
+//        String userId = sessionManager.getUserData().get("user_id");
+//        String itemId = currentBook.getItemId();
+//
+//        if (userId == null || itemId == null) {
+//            Toast.makeText(context, "User ID or Item ID is null", Toast.LENGTH_LONG).show();
+//            holder.quantityProgressbar.setVisibility(View.GONE);
+//            holder.quantityTxt.setVisibility(View.VISIBLE);
+//            return;
+//        }
+//
+//        JSONObject jsonObject = new JSONObject();
+//        try {
+//            jsonObject.put("userId", userId);
+//            jsonObject.put("itemId", itemId);
+//            jsonObject.put("quantity", quantity);
+//        } catch (JSONException e) {
+//            Toast.makeText(context, "Error creating JSON", Toast.LENGTH_SHORT).show();
+//            holder.quantityProgressbar.setVisibility(View.GONE);
+//            holder.quantityTxt.setVisibility(View.VISIBLE);
+//            return;
+//        }
+//
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, updateUrl, jsonObject,
+//                response -> {
+//                    try {
+//                        boolean success = response.getBoolean("success");
+//                        String message = response.getString("message");
+//                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+//
+//                        if (success) {
+//                            holder.quantityTxt.setText(String.valueOf("Qty: " + quantity));
+//                            if (context instanceof CartViewActivity) {
+//                                ((CartViewActivity) context).fetchCartItems();
+//                            }else if (context instanceof CreateDeliveryAddressActivity){
+//                                ((CreateDeliveryAddressActivity) context).fetchCartItems();
+//                            }
+//                        }
+//                    } catch (JSONException e) {
+//                        Toast.makeText(context, "Error processing response", Toast.LENGTH_SHORT).show();
+//                    } finally {
+//                        holder.quantityProgressbar.setVisibility(View.GONE);
+//                        holder.quantityTxt.setVisibility(View.VISIBLE);
+//                    }
+//                },
+//                error -> {
+//                    Toast.makeText(context, "Error: " + error.toString(), Toast.LENGTH_LONG).show();
+//                    holder.quantityProgressbar.setVisibility(View.GONE);
+//                    holder.quantityTxt.setVisibility(View.VISIBLE);
+//                }) {
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String, String> headers = new HashMap<>();
+//                headers.put("Content-Type", "application/json");
+//                if (authToken != null && !authToken.isEmpty()) {
+//                    headers.put("Authorization", "Bearer " + authToken);
+//                }
+//                return headers;
+//            }
+//        };
+//        MySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
+//    }
 
     private void deleteBook(CartViewModel currentBook) {
-        String deleteUrl = Constant.BASE_URL + "cart/remove";
-        String userId = sessionManager.getUserData().get("user_id");
-        String itemId = currentBook.getItemId();
-
-        Log.d("DeleteBookRequest", "UserId: " + userId);
-        Log.d("DeleteBookRequest", "ItemId: " + itemId);
-
-        // Check if userId or itemId is null or empty
-        if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(itemId)) {
-            Log.e("DeleteBookRequest", "UserId or ItemId is null or empty");
-            Toast.makeText(context, "User ID or Item ID is empty", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("userId", userId);
-            jsonObject.put("itemId", itemId);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        Log.d("DeleteBookRequest", "Json Body: " + jsonObject.toString());
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, deleteUrl, jsonObject,
+        String deleteUrl = Constant.BASE_URL + "cart/remove/" + currentBook.getBookId();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, deleteUrl, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

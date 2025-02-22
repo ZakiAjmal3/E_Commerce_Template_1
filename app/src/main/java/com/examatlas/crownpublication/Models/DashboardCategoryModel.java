@@ -1,41 +1,21 @@
 package com.examatlas.crownpublication.Models;
 
 public class DashboardCategoryModel {
-    String categoryId,categoryName,categoryDescription,tags,isActive,totalRow,totalPages,currentPage;
+    String categoryId,categoryName,slug,isActive;
 
-    public DashboardCategoryModel(String categoryId, String categoryName, String categoryDescription, String tags, String isActive, String totalRow, String totalPages, String currentPage) {
+    public DashboardCategoryModel(String categoryId, String categoryName, String slug, String isActive) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
-        this.categoryDescription = categoryDescription;
-        this.tags = tags;
+        this.slug = slug;
         this.isActive = isActive;
-        this.totalRow = totalRow;
-        this.totalPages = totalPages;
-        this.currentPage = currentPage;
     }
 
-    public String getTotalRow() {
-        return totalRow;
+    public String getSlug() {
+        return slug;
     }
 
-    public void setTotalRow(String totalRow) {
-        this.totalRow = totalRow;
-    }
-
-    public String getTotalPages() {
-        return totalPages;
-    }
-
-    public void setTotalPages(String totalPages) {
-        this.totalPages = totalPages;
-    }
-
-    public String getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(String currentPage) {
-        this.currentPage = currentPage;
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
     public String getCategoryId() {
@@ -52,22 +32,6 @@ public class DashboardCategoryModel {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
-    }
-
-    public String getCategoryDescription() {
-        return categoryDescription;
-    }
-
-    public void setCategoryDescription(String categoryDescription) {
-        this.categoryDescription = categoryDescription;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
     }
 
     public String getIsActive() {

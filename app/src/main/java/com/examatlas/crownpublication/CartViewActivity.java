@@ -55,7 +55,7 @@ public class CartViewActivity extends AppCompatActivity {
     CartViewModel cartViewModel;
     ArrayList<CartViewModel> cartViewModelArrayList;
     SessionManager sessionManager;
-    String cartUrl,authToken;
+    String cartUrl = Constant.BASE_URL + "cart",authToken;
     RelativeLayout noDataLayout, priceDetailRelativeLayout,bottomStickyButtonLayout;
     ProgressBar progressBar;
     TextView priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
@@ -88,7 +88,6 @@ public class CartViewActivity extends AppCompatActivity {
         cartViewModelArrayList = new ArrayList<>();
 
         bookCartRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        cartUrl = Constant.BASE_URL + "cart/get/" + sessionManager.getUserData().get("user_id");
         authToken = sessionManager.getUserData().get("authToken");
         fetchCartItems();
 
@@ -123,39 +122,34 @@ public class CartViewActivity extends AppCompatActivity {
                                 noDataLayout.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.GONE);
 
-                                JSONObject jsonObject = response.getJSONObject("cart");
+                                JSONObject jsonObject = response.getJSONObject("data");
                                 String cartId = jsonObject.getString("_id");
                                 JSONArray jsonArray = jsonObject.getJSONArray("items");
                                 cartViewModelArrayList.clear(); // Clear the list before adding new items
                                 for (int i = 0; i < jsonArray.length(); i++) {
 
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-                                    String bookIdData = jsonObject2.getString("bookId");
-                                    if (bookIdData == null || bookIdData.equals("null"))
-                                        continue;
-                                    String itemId = jsonObject2.getString("_id");
                                     String quantity = jsonObject2.getString("quantity");
-                                    String isInCart = jsonObject2.getString("IsInCart");
+                                    String type = jsonObject2.getString("type");
 
-                                    JSONObject jsonObject3 = jsonObject2.getJSONObject("bookId");
+                                    JSONObject jsonObject3 = jsonObject2.getJSONObject("product");
 
                                     String bookId = jsonObject3.getString("_id");
                                     String title = jsonObject3.getString("title");
-                                    String keyword = jsonObject3.getString("keyword");
+                                    String sku = jsonObject3.getString("sku");
+                                    String slug = jsonObject3.getString("slug");
+                                    String publication = jsonObject3.getString("publication");
+                                    String stock = jsonObject3.getString("stock");
                                     String price = jsonObject3.getString("price");
-                                    String sellPrice = jsonObject3.getString("sellPrice");
+                                    String sellingPrice = jsonObject3.getString("sellingPrice");
+                                    String description = jsonObject3.getString("description");
                                     String author = jsonObject3.getString("author");
-                                    String category = jsonObject3.getString("category");
-                                    String content = jsonObject3.getString("content");
-                                    String subject = jsonObject3.getString("subject");
+                                    String categoryId = jsonObject3.getString("categoryId");
+                                    String subCategoryId = jsonObject3.getString("subCategoryId");
+                                    String isActive = jsonObject3.getString("isActive");
+                                    String language = jsonObject3.getString("language");
+                                    String edition = jsonObject3.getString("edition");
 
-                                    JSONObject jsonObject5 = jsonObject3.getJSONObject("dimension");
-                                    String length = jsonObject5.getString("length");
-                                    String height = jsonObject5.getString("height");
-                                    String breadth = jsonObject5.getString("breadth");
-
-                                    String weight = jsonObject3.getString("weight");
-                                    String isbn = jsonObject3.getString("isbn");
 
                                     // Use StringBuilder for tags
                                     StringBuilder tags = new StringBuilder();
@@ -184,10 +178,7 @@ public class CartViewActivity extends AppCompatActivity {
                                         bookImageArrayList.add(bookImageModels);
                                     }
 
-                                    String createdDate = jsonObject3.getString("createdAt");
-                                    String updatedAt = jsonObject3.getString("updatedAt");
-
-                                    cartViewModel = new CartViewModel(cartId, bookId, title, keyword, price, sellPrice, author, category,content,subject,length,height,breadth,weight,isbn, tags.toString(),bookImageArrayList,createdDate,updatedAt, quantity,isInCart,itemId);
+                                    cartViewModel = new CartViewModel(cartId,quantity,type,bookId,title,sku,slug,publication,stock,price,sellingPrice,description,author,categoryId,subCategoryId,isActive,language,edition,tags.toString(),bookImageArrayList);
                                     cartViewModelArrayList.add(cartViewModel);
                                 }
                                 // If you have already created the adapter, just notify the change
@@ -269,7 +260,7 @@ public class CartViewActivity extends AppCompatActivity {
 
         for (int i = 0; i<cartViewModelArrayList.size(); i++){
             int origPrice = Integer.parseInt(cartViewModelArrayList.get(i).getQuantity()) * Integer.parseInt(cartViewModelArrayList.get(i).getPrice());
-            int sellPrice = Integer.parseInt(cartViewModelArrayList.get(i).getQuantity()) * Integer.parseInt(cartViewModelArrayList.get(i).getSellPrice());
+            int sellPrice = Integer.parseInt(cartViewModelArrayList.get(i).getQuantity()) * Integer.parseInt(cartViewModelArrayList.get(i).getSellingPrice());
             totalOriginalPrice = totalOriginalPrice + origPrice;
             totalSellPrice = totalSellPrice + sellPrice;
         }

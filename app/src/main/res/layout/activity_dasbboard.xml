@@ -65,13 +65,17 @@
             />
     </RelativeLayout>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollViewAboveBookRecycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/topBar">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
         <RelativeLayout
+            android:id="@+id/sliderRl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <com.google.android.material.card.MaterialCardView
@@ -124,11 +128,10 @@
                 android:layout_marginRight="10dp"
                 android:visibility="visible"/>
         </RelativeLayout>
-    </ScrollView>
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="match_parent"
-        android:layout_below="@id/scrollViewAboveBookRecycler"
+        android:layout_below="@id/sliderRl"
         android:layout_height="45dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="20dp"
@@ -155,7 +158,15 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 />
-            <TextView
+                <ProgressBar
+                    android:id="@+id/moreItemLoadProgressBar"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_below="@id/booksRecycler"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="gone"
+                    android:indeterminateTint="@color/md_theme_dark_errorContainer"/>
+                <TextView
                 android:id="@+id/noBooksInThisCategoryTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -167,6 +178,8 @@
                 android:textColor="@color/md_theme_dark_onError"
                 android:visibility="gone"/>
             </RelativeLayout>
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
             <RelativeLayout
                 android:id="@+id/noDataLayout"
                 android:layout_width="wrap_content"

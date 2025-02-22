@@ -5,18 +5,16 @@ import com.examatlas.crownpublication.Models.extraModels.OrderItemsArrayListMode
 import java.util.ArrayList;
 
 public class OrderHistoryModel {
-    String order_id,shipRocketOrderId,totalAmount,finalAmount,paymentMethod,status,billingDetailId,isShippingBillingSame,addressType,shippingAddressUserName,shippingAddressFull,razorpay_order_id,createdAt;
+    String order_id,shipRocketOrderId,totalAmount,finalAmount,paymentMethod,status,addressType,shippingAddressUserName,shippingAddressFull,razorpay_order_id,createdAt;
     ArrayList<OrderItemsArrayListModel> orderItemsArrayList;
 
-    public OrderHistoryModel(String order_id, String shipRocketOrderId, String totalAmount, String finalAmount, String paymentMethod, String status, String billingDetailId, String isShippingBillingSame, String addressType, String shippingAddressUserName, String shippingAddressFull, String razorpay_order_id, String createdAt, ArrayList<OrderItemsArrayListModel> orderItemsArrayList) {
+    public OrderHistoryModel(String order_id, String shipRocketOrderId, String totalAmount, String finalAmount, String paymentMethod, String status, String addressType, String shippingAddressUserName, String shippingAddressFull, String razorpay_order_id, String createdAt, ArrayList<OrderItemsArrayListModel> orderItemsArrayList) {
         this.order_id = order_id;
         this.shipRocketOrderId = shipRocketOrderId;
         this.totalAmount = totalAmount;
         this.finalAmount = finalAmount;
         this.paymentMethod = paymentMethod;
         this.status = status;
-        this.billingDetailId = billingDetailId;
-        this.isShippingBillingSame = isShippingBillingSame;
         this.addressType = addressType;
         this.shippingAddressUserName = shippingAddressUserName;
         this.shippingAddressFull = shippingAddressFull;
@@ -71,22 +69,6 @@ public class OrderHistoryModel {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getBillingDetailId() {
-        return billingDetailId;
-    }
-
-    public void setBillingDetailId(String billingDetailId) {
-        this.billingDetailId = billingDetailId;
-    }
-
-    public String getIsShippingBillingSame() {
-        return isShippingBillingSame;
-    }
-
-    public void setIsShippingBillingSame(String isShippingBillingSame) {
-        this.isShippingBillingSame = isShippingBillingSame;
     }
 
     public String getAddressType() {

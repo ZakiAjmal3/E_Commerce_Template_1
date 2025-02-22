@@ -47,11 +47,18 @@ public class CreateDeliveryAddressAdapter extends RecyclerView.Adapter<CreateDel
         holder.fullName.setText(fullNameSTR);
         holder.fullAddress.setText(fullAddressSTR);
 
+        if (createDeliveryAddressModelArrayList.get(position).getIsDefault().equals("true")){
+            holder.radioButton.setChecked(true);
+        }else {
+            holder.radioButton.setChecked(false);
+        }
+
         // Set the RadioButton state based on the selected position
         holder.radioButton.setChecked(position == selectedPosition);
 
         // Set OnClickListener for the RadioButton
         holder.radioButton.setOnClickListener(v -> {
+
             // Update selected position
             selectedPosition = holder.getAdapterPosition();
             notifyDataSetChanged(); // Refresh the RecyclerView
@@ -66,7 +73,7 @@ public class CreateDeliveryAddressAdapter extends RecyclerView.Adapter<CreateDel
         if (selectedPosition != -1) {
             return createDeliveryAddressModelArrayList.get(selectedPosition);
         }
-        return null; // No address selected
+        return createDeliveryAddressModelArrayList.get(0); // No address selected
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

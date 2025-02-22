@@ -1,10 +1,10 @@
 package com.examatlas.crownpublication.Models;
 
 public class CreateDeliveryAddressModel {
-    String billingId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress;
+    String addressId,firstName,lastName,houseNoOrApartmentNo,streetAddress,townCity,state,pinCode,countryName,phone,emailAddress,addressType,isDefault;
 
-    public CreateDeliveryAddressModel(String billingId, String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress) {
-        this.billingId = billingId;
+    public CreateDeliveryAddressModel(String addressId, String firstName, String lastName, String houseNoOrApartmentNo, String streetAddress, String townCity, String state, String pinCode, String countryName, String phone, String emailAddress, String addressType, String isDefault) {
+        this.addressId = addressId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.houseNoOrApartmentNo = houseNoOrApartmentNo;
@@ -15,14 +15,32 @@ public class CreateDeliveryAddressModel {
         this.countryName = countryName;
         this.phone = phone;
         this.emailAddress = emailAddress;
+        this.addressType = addressType;
+        this.isDefault = isDefault;
     }
 
-    public String getBillingId() {
-        return billingId;
+    public String getIsDefault() {
+        return isDefault;
     }
 
-    public void setBillingId(String billingId) {
-        this.billingId = billingId;
+    public void setIsDefault(String isDefault) {
+        this.isDefault = isDefault;
+    }
+
+    public String getAddressType() {
+        return addressType;
+    }
+
+    public void setAddressType(String addressType) {
+        this.addressType = addressType;
+    }
+
+    public String getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 
     public String getFirstName() {

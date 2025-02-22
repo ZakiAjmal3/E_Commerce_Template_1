@@ -60,6 +60,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         backImgBtn = findViewById(R.id.backImgBtn);
         imgEdit = findViewById(R.id.imgEdit);
+        imgEdit.setVisibility(View.GONE);
         nameTxt = findViewById(R.id.nameTxt);
         emailTxt = findViewById(R.id.emailTxt);
         phoneTxt = findViewById(R.id.phoneTxt);
@@ -72,13 +73,16 @@ public class ProfileActivity extends AppCompatActivity {
         userId = sessionManager.getUserData().get("user_id");
 
         // Retrieve user data
-        userName = sessionManager.getUserData().get("name");
+        userName = sessionManager.getUserData().get("firstName") + " " + sessionManager.getUserData().get("lastName");
         userEmail = sessionManager.getUserData().get("email");
         userPhone = sessionManager.getUserData().get("mobile");
 
         // Set the text in TextViews
         nameTxt.setText(userName != null ? userName : "N/A");
         emailTxt.setText(userEmail != null ? userEmail : "N/A");
+        if (userPhone.equalsIgnoreCase("User")){
+            phoneTxt.setVisibility(View.GONE);
+        }
         phoneTxt.setText(userPhone != null ? userPhone : "N/A");
 
         backImgBtn.setOnClickListener(new View.OnClickListener() {

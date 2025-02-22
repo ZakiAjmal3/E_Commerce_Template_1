@@ -221,7 +221,7 @@ public class ProductDescriptionActivity extends AppCompatActivity {
         if (!dashboardModelArrayList.isEmpty()) {
             for (int i = 0; i < dashboardModelArrayList.size(); i++) {
                 String categoryStrComparing;
-                categoryStrComparing = dashboardModelArrayList.get(i).getCategory();
+                categoryStrComparing = dashboardModelArrayList.get(i).getCategoryName();
                 if (categoryStrComparing.equalsIgnoreCase(categoryStr)) {
                     relatedWithCategoryDashboardModelArrayList.add(dashboardModelArrayList.get(i));
                 }

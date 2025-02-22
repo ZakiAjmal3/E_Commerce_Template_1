@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -62,7 +63,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DashboardActivity extends AppCompatActivity {
     RelativeLayout parentLayout;
-    ScrollView scrollViewAboveBookRecycler;
+    NestedScrollView scrollViewAboveBookRecycler;
     private ImageSlider slider;
     RecyclerView allBooksRecyclerView,examCategoryRecyclerView;
     ArrayList<DashboardCategoryModel> dashboardCategoryModelArrayList;
@@ -71,18 +72,17 @@ public class DashboardActivity extends AppCompatActivity {
     DashboardAdapter dashboardAdapter;
     static ArrayList<DashboardModel> dashboardModelArrayList;
     ArrayList<DashboardModel> dashboardSortingModelArrayList;
-    ProgressBar progressBar;
+    ProgressBar progressBar,moreItemLoadProgressBar;
     RelativeLayout noDataLayout;
     ImageView imgMenu,cartIconBtn;
     RelativeLayout topBar;
     public String currentFrag = "HOME";
     SessionManager sessionManager;
     String authToken;
-    private final String bookURL = Constant.BASE_URL + "book/getAllBooks";
+    private final String bookURL = Constant.BASE_URL + "books";
     private int currentPage = 1;
     private int totalPages = 1;
     private final int itemsPerPage = 10;
-    private boolean isLoading = false;
     TextView showAllCategoryBookTxt,noBookInThisCategoryTxt;
     private boolean isSearchViewFocused = false;
     @Override
@@ -107,6 +107,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         noDataLayout = findViewById(R.id.noDataLayout);
         progressBar = findViewById(R.id.progressBar);
+        moreItemLoadProgressBar = findViewById(R.id.moreItemLoadProgressBar);
         allBooksRecyclerView = findViewById(R.id.booksRecycler);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2); // 2 is the number of columns
         allBooksRecyclerView.setLayoutManager(gridLayoutManager);
@@ -122,13 +123,13 @@ public class DashboardActivity extends AppCompatActivity {
         authToken = sessionManager.getUserData().get("authToken");
 
         sliderArrayList = new ArrayList<>();
-//        sliderArrayList.add(new SlideModel(R.drawable.image1, ScaleTypes.CENTER_CROP));
-//        sliderArrayList.add(new SlideModel(R.drawable.image2, ScaleTypes.CENTER_CROP));
-//        sliderArrayList.add(new SlideModel(R.drawable.image3, ScaleTypes.CENTER_CROP));
-//        slider.setImageList(sliderArrayList);
-        getBannerImage();
+        sliderArrayList.add(new SlideModel(R.drawable.image1, ScaleTypes.CENTER_CROP));
+        sliderArrayList.add(new SlideModel(R.drawable.image2, ScaleTypes.CENTER_CROP));
+        sliderArrayList.add(new SlideModel(R.drawable.image3, ScaleTypes.CENTER_CROP));
+        sliderArrayList.add(new SlideModel(R.drawable.image4, ScaleTypes.CENTER_CROP));
+        slider.setImageList(sliderArrayList);
+//        getBannerImage();
         getCategory();
-        getAllBooks();
 
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,28 +226,28 @@ public class DashboardActivity extends AppCompatActivity {
                 }
             }
         });
-        allBooksRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        scrollViewAboveBookRecycler.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                // Get the GridLayoutManager and find the last visible item position
-                int lastVisibleItemPosition = gridLayoutManager.findLastVisibleItemPosition();
-                int totalItemCount = gridLayoutManager.getItemCount();
-
-                Log.d("ScrollListener", "Last visible item position: " + lastVisibleItemPosition + " Total items: " + totalItemCount);
-
-                // Check if we are at the bottom of the list
-                if (lastVisibleItemPosition + 1 >= totalItemCount && !isLoading) {
-                    // Check if there are more pages to load
-                    if (currentPage < totalPages) {
-                        currentPage++;  // Increment the current page
-                        getAllBooks();   // Fetch the next set of books
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // on scroll change we are checking when users scroll as bottom.
+                if (scrollY == v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) {
+                    // in this method we are incrementing page number,
+                    // making progress bar visible and calling get data method.
+                    currentPage++;
+                    int scrollThreshold = 50; // threshold to trigger load more data
+                    int diff = (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) - scrollY;
+                    Log.e("ScrollDebug", "diff: " + diff);
+                    // Check if we have scrolled to the bottom or near bottom
+                    if (diff <= scrollThreshold && currentPage <= totalPages) {
+                        moreItemLoadProgressBar.setVisibility(View.VISIBLE);
+                        // on below line we are again calling
+                        // a method to load data in our array list.
+                        getAllBooks();
+                        Log.e("insideIf","true");
                     }
                 }
             }
         });
-
     }
 
     @Override
@@ -285,81 +286,73 @@ public class DashboardActivity extends AppCompatActivity {
                 y >= location[1] && y <= (location[1] + view.getHeight()));
     }
 
-    private void getBannerImage() {
-        String bannerImageURL = Constant.BASE_URL + "banner/get-banner";
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, bannerImageURL, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            String status = response.getString("status");
-                            JSONObject jsonObject1 = response.getJSONObject("data");
-                            String dataID = jsonObject1.getString("_id");
-                            JSONArray jsonArray1 = jsonObject1.getJSONArray("images");
-                            for (int i = 0; i < jsonArray1.length(); i++) {
-                                JSONObject jsonObject2 = jsonArray1.getJSONObject(i);
-                                String imageUrl = jsonObject2.getString("url");
-                                sliderArrayList.add(new SlideModel(imageUrl, ScaleTypes.FIT));
-                            }
-                            slider.setImageList(sliderArrayList);
-                        } catch (JSONException e) {
-                            Log.e("Exam Catch error", "Error parsing JSON: " + e.getMessage());
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String errorMessage = "Error: " + error.toString();
-                        if (error.networkResponse != null) {
-                            try {
-                                // Parse the error response
-                                String jsonError = new String(error.networkResponse.data);
-                                JSONObject jsonObject = new JSONObject(jsonError);
-                                String message = jsonObject.optString("message", "Unknown error");
-                                // Now you can use the message
-                                Toast.makeText(DashboardActivity.this, message, Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        Log.e("ExamListError", errorMessage);
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + authToken);
-                return headers;
-            }
-        };
-        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
-    }
+//    private void getBannerImage() {
+//        String bannerImageURL = Constant.BASE_URL + "banner/get-banner";
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, bannerImageURL, null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            String status = response.getString("status");
+//                            JSONObject jsonObject1 = response.getJSONObject("data");
+//                            String dataID = jsonObject1.getString("_id");
+//                            JSONArray jsonArray1 = jsonObject1.getJSONArray("images");
+//                            for (int i = 0; i < jsonArray1.length(); i++) {
+//                                JSONObject jsonObject2 = jsonArray1.getJSONObject(i);
+//                                String imageUrl = jsonObject2.getString("url");
+//                                sliderArrayList.add(new SlideModel(imageUrl, ScaleTypes.FIT));
+//                            }
+//                            slider.setImageList(sliderArrayList);
+//                        } catch (JSONException e) {
+//                            Log.e("Exam Catch error", "Error parsing JSON: " + e.getMessage());
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        String errorMessage = "Error: " + error.toString();
+//                        if (error.networkResponse != null) {
+//                            try {
+//                                // Parse the error response
+//                                String jsonError = new String(error.networkResponse.data);
+//                                JSONObject jsonObject = new JSONObject(jsonError);
+//                                String message = jsonObject.optString("message", "Unknown error");
+//                                // Now you can use the message
+//                                Toast.makeText(DashboardActivity.this, message, Toast.LENGTH_LONG).show();
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                        Log.e("ExamListError", errorMessage);
+//                    }
+//                }) {
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String, String> headers = new HashMap<>();
+//                headers.put("Content-Type", "application/json");
+//                headers.put("Authorization", "Bearer " + authToken);
+//                return headers;
+//            }
+//        };
+//        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+//    }
 
     private void getCategory() {
-        String examCategoryURL = Constant.BASE_URL + "category/getCategory";
+        String examCategoryURL = Constant.BASE_URL + "category?pageNumber=1&pageSize=100";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, examCategoryURL, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String status = response.getString("status");
-
-                            JSONObject jsonObject1 = response.getJSONObject("pagination");
-                            String totalRows = jsonObject1.getString("totalRows");
-                            String totalPages = jsonObject1.getString("totalPages");
-                            String currentPage = jsonObject1.getString("currentPage");
-
                             JSONArray jsonArray = response.getJSONArray("data");
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                 String categoryId = jsonObject2.getString("_id");
                                 String categoryName = jsonObject2.getString("categoryName");
-                                String categoryDescription = jsonObject2.getString("description");
-                                String tags =  parseTags(jsonObject2.getJSONArray("tags"));
-                                String isActive = jsonObject2.getString("is_active");
-                                DashboardCategoryModel dashboardCategoryModel = new DashboardCategoryModel(categoryId,categoryName,categoryDescription,tags,isActive,totalRows,totalPages,currentPage);
+                                String slug = jsonObject2.getString("slug");
+                                String isActive = jsonObject2.getString("isActive");
+                                DashboardCategoryModel dashboardCategoryModel = new DashboardCategoryModel(categoryId,categoryName,slug,isActive);
                                 dashboardCategoryModelArrayList.add(dashboardCategoryModel);
                             }
 
@@ -401,35 +394,22 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void getAllBooks() {
-        if (isLoading) return;  // Prevent making requests if one is already in progress
-        isLoading = true;  // Set flag to true when the request is in progress
-//        String paginatedURL = bookURL + "?type=book&page=" + currentPage + "&per_page=" + itemsPerPage;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, bookURL, null,
+        String subjectURLPage = bookURL  + "?pageNumber=" + currentPage + "&pageSize=" + itemsPerPage;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, subjectURLPage, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            allBooksRecyclerView.setVisibility(View.VISIBLE);
-                            scrollViewAboveBookRecycler.setVisibility(View.VISIBLE);
-                            searchView.setVisibility(View.VISIBLE);
-                            progressBar.setVisibility(View.GONE);
-                            boolean status = response.getBoolean("status");
+                            boolean status = response.getBoolean("success");
 
                             if (status) {
                                 JSONArray jsonArray = response.getJSONArray("data");
+
+                                totalPages = response.getInt("totalPage");
+
                                 // Parse books directly here
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
-
-//                                    JSONObject jsonObject = response.getJSONObject("pagination");
-//                                    int totalRows = Integer.parseInt(jsonObject.getString("totalRows"));
-                                    int totalRows = 10;
-//                                    totalPages = Integer.parseInt(jsonObject.getString("totalPages"));
-                                    totalPages = 10;
-//                                    currentPage = Integer.parseInt(jsonObject.getString("currentPage"));
-                                    currentPage = 1;
-//                                    int pageSize = Integer.parseInt(jsonObject.getString("pageSize"));
-                                    int pageSize = 10;
 
                                     ArrayList<BookImageModels> bookImageArrayList = new ArrayList<>();
                                     JSONArray jsonArray1 = jsonObject2.getJSONArray("images");
@@ -445,53 +425,59 @@ public class DashboardActivity extends AppCompatActivity {
                                         );
                                         bookImageArrayList.add(bookImageModels);
                                     }
-                                    JSONObject jsonObject3 = jsonObject2.getJSONObject("dimension");
-                                    String length = jsonObject3.getString("length");
-                                    String breadth = jsonObject3.getString("breadth");
-                                    String height = jsonObject3.getString("height");
+                                    JSONObject categoryObject = jsonObject2.getJSONObject("category");
+                                    String categoryId = categoryObject.getString("_id");
+                                    String categoryName = categoryObject.getString("categoryName");
+                                    JSONObject subCategoryObject = jsonObject2.getJSONObject("subCategory");
+                                    String subCategoryId = subCategoryObject.getString("_id");
+                                    String subCategoryName = subCategoryObject.getString("name");
                                     DashboardModel model = new DashboardModel(
                                             jsonObject2.getString("_id"),
                                             jsonObject2.getString("title"),
-                                            jsonObject2.getString("keyword"),
+                                            jsonObject2.getString("sku"),
+                                            jsonObject2.getString("slug"),
+                                            jsonObject2.getString("publication"),
+                                            jsonObject2.getString("stock"),
                                             jsonObject2.getString("price"),
-                                            jsonObject2.getString("sellPrice"),
+                                            jsonObject2.getString("sellingPrice"),
+                                            jsonObject2.getString("description"),
                                             jsonObject2.getString("author"),
-                                            jsonObject2.getString("category"),
-                                            jsonObject2.getString("content"),
-                                            jsonObject2.getString("subject"),
-                                            length,breadth,height,
-                                            jsonObject2.getString("weight"),
-                                            jsonObject2.getString("isbn"),
+                                            jsonObject2.getString("isActive"),
+                                            jsonObject2.getString("language"),
+                                            jsonObject2.getString("edition"),
+                                            categoryId, categoryName, subCategoryId, subCategoryName,
                                             parseTags(jsonObject2.getJSONArray("tags")),
-                                            jsonObject2.getString("IsInCart"),// Ensure this method is implemented correctly,
-                                            bookImageArrayList,
-                                            jsonObject2.getString("createdAt"),
-                                            jsonObject2.getString("updatedAt"),
-                                            "false",
-                                            null,null,
-                                            totalRows,totalPages,currentPage,pageSize
-                                    );
-                                    dashboardModelArrayList.add(model);
-                                }
+                                            bookImageArrayList);
 
-                                // Update the original list in the adapter
-                                if (dashboardAdapter != null) {
-                                    dashboardAdapter.updateOriginalList(dashboardModelArrayList);
+                                    boolean isPresent = false;
+                                    for (int j = 0; j < dashboardModelArrayList.size(); j++) {
+                                        if (dashboardModelArrayList.get(j).getBookId().equals(model.getBookId())) {
+                                            isPresent = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!isPresent) {
+                                        dashboardModelArrayList.add(model);
+                                    }
+                                    // Avoid adding duplicate categories
                                 }
-                                updateUI();
+                                // Update UI if categories exist
                                 if (dashboardModelArrayList.isEmpty()) {
                                     noDataLayout.setVisibility(View.VISIBLE);
                                     searchView.setVisibility(View.GONE);
                                     allBooksRecyclerView.setVisibility(View.GONE);
                                     progressBar.setVisibility(View.GONE);
+                                    moreItemLoadProgressBar.setVisibility(View.GONE);
                                 } else {
-                                    if (dashboardAdapter == null) {
-                                        dashboardAdapter = new DashboardAdapter(DashboardActivity.this, dashboardModelArrayList);
-                                        allBooksRecyclerView.setAdapter(dashboardAdapter);
-                                    } else {
-                                        dashboardAdapter.notifyDataSetChanged();
-                                    }
+                                    allBooksRecyclerView.setVisibility(View.VISIBLE);
+                                    scrollViewAboveBookRecycler.setVisibility(View.VISIBLE);
+                                    searchView.setVisibility(View.VISIBLE);
+                                    progressBar.setVisibility(View.GONE);
+                                    moreItemLoadProgressBar.setVisibility(View.GONE);
+                                    dashboardAdapter = new DashboardAdapter(DashboardActivity.this, dashboardModelArrayList);
+                                    allBooksRecyclerView.setAdapter(dashboardAdapter);
                                 }
+                                moreItemLoadProgressBar.setVisibility(View.GONE);
                                 showAllCategoryBookTxt.setClickable(true);
                             } else {
                                 Toast.makeText(DashboardActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
@@ -532,23 +518,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
-    private void updateUI() {
-        if (dashboardModelArrayList.isEmpty()) {
-            noDataLayout.setVisibility(View.VISIBLE);
-            allBooksRecyclerView.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-        } else {
-            noDataLayout.setVisibility(View.GONE);
-            allBooksRecyclerView.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-            if (dashboardAdapter == null) {
-                dashboardAdapter = new DashboardAdapter(this, dashboardModelArrayList);
-                allBooksRecyclerView.setAdapter(dashboardAdapter);
-            } else {
-                dashboardAdapter.notifyDataSetChanged();
-            }
-        }
-    }
     private String parseTags(JSONArray tagsArray) throws JSONException {
         StringBuilder tags = new StringBuilder();
         for (int j = 0; j < tagsArray.length(); j++) {
@@ -576,7 +545,9 @@ public class DashboardActivity extends AppCompatActivity {
         layoutOrderHistory = drawerDialog.findViewById(R.id.layoutOrderHistory);
         layoutProfile = drawerDialog.findViewById(R.id.layoutProfile);
         layoutOrderInBulk = drawerDialog.findViewById(R.id.layoutBulkOrder);
+        layoutOrderInBulk.setVisibility(View.GONE);
         layoutJoinAsAuthor = drawerDialog.findViewById(R.id.layoutJoinAsAuthor);
+        layoutJoinAsAuthor.setVisibility(View.GONE);
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
         layoutLogin = drawerDialog.findViewById(R.id.layoutLogin);
         layoutShare = drawerDialog.findViewById(R.id.layoutShare);
@@ -588,7 +559,7 @@ public class DashboardActivity extends AppCompatActivity {
         cardBack = drawerDialog.findViewById(R.id.cardBack);
         imgUser = drawerDialog.findViewById(R.id.imgUser);
 
-        txtUsername.setText(sessionManager.getUserData().get("name"));
+        txtUsername.setText(sessionManager.getUserData().get("firstName") + " " + sessionManager.getUserData().get("lastName"));
         txtUserEmail.setText(sessionManager.getUserData().get("email"));
 
         if (sessionManager.IsLoggedIn()){
@@ -808,7 +779,7 @@ public class DashboardActivity extends AppCompatActivity {
         if (!examName.isEmpty()) {
             // Loop through the list and add matching categories to the sorted list
             for (int i = 0; i < dashboardModelArrayList.size(); i++) {
-                if (dashboardModelArrayList.get(i).getCategory().equalsIgnoreCase(examName)) {
+                if (dashboardModelArrayList.get(i).getCategoryName().equalsIgnoreCase(examName)) {
                     dashboardSortingModelArrayList.add(dashboardModelArrayList.get(i));
                 }
             }

@@ -6,45 +6,62 @@ import com.examatlas.crownpublication.Models.extraModels.BookImageModels;
 import java.util.ArrayList;
 
 public class DashboardModel {
-    String bookID, title, keyword, price, sellPrice, author, category, content, subject, length, breadth, height, weight, isbn, tags, isInCart, createdAt, updatedAt, isInWishList,edition,publication;
-    ArrayList<BookImageModels> images;
-    int totalRows, totalPages, currentPage, pageSize;
+    String bookId,bookTitle,sku,slug,publication,stock,price,sellingPrice,description,author,isActive,language,edition,
+    categoryId,categoryName,subCategoryId,subCategoryName,tags;
+    ArrayList<BookImageModels> bookImages;
 
-    public DashboardModel(String bookID, String title, String keyword, String price, String sellPrice, String author, String category, String content, String subject, String length, String breadth, String height, String weight, String isbn, String tags, String isInCart, ArrayList<BookImageModels> images, String createdAt, String updatedAt, String isInWishList, String edition, String publication, int totalRows, int totalPages, int currentPage, int pageSize) {
-        this.bookID = bookID;
-        this.title = title;
-        this.keyword = keyword;
-        this.price = price;
-        this.sellPrice = sellPrice;
-        this.author = author;
-        this.category = category;
-        this.content = content;
-        this.subject = subject;
-        this.length = length;
-        this.breadth = breadth;
-        this.height = height;
-        this.weight = weight;
-        this.isbn = isbn;
-        this.tags = tags;
-        this.isInCart = isInCart;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.isInWishList = isInWishList;
-        this.images = images;
-        this.totalRows = totalRows;
-        this.totalPages = totalPages;
-        this.currentPage = currentPage;
-        this.pageSize = pageSize;
-        this.edition = edition;
+    public DashboardModel(String bookId, String bookTitle, String sku, String slug, String publication, String stock, String price, String sellingPrice, String description, String author, String isActive, String language, String edition, String categoryId, String categoryName, String subCategoryId, String subCategoryName, String tags, ArrayList<BookImageModels> bookImages) {
+        this.bookId = bookId;
+        this.bookTitle = bookTitle;
+        this.sku = sku;
+        this.slug = slug;
         this.publication = publication;
-    }
-
-    public String getEdition() {
-        return edition;
-    }
-
-    public void setEdition(String edition) {
+        this.stock = stock;
+        this.price = price;
+        this.sellingPrice = sellingPrice;
+        this.description = description;
+        this.author = author;
+        this.isActive = isActive;
+        this.language = language;
         this.edition = edition;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.subCategoryId = subCategoryId;
+        this.subCategoryName = subCategoryName;
+        this.tags = tags;
+        this.bookImages = bookImages;
+    }
+
+    public String getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(String bookId) {
+        this.bookId = bookId;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
     public String getPublication() {
@@ -55,28 +72,12 @@ public class DashboardModel {
         this.publication = publication;
     }
 
-    public String getBookID() {
-        return bookID;
+    public String getStock() {
+        return stock;
     }
 
-    public void setBookID(String bookID) {
-        this.bookID = bookID;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
+    public void setStock(String stock) {
+        this.stock = stock;
     }
 
     public String getPrice() {
@@ -87,12 +88,20 @@ public class DashboardModel {
         this.price = price;
     }
 
-    public String getSellPrice() {
-        return sellPrice;
+    public String getSellingPrice() {
+        return sellingPrice;
     }
 
-    public void setSellPrice(String sellPrice) {
-        this.sellPrice = sellPrice;
+    public void setSellingPrice(String sellingPrice) {
+        this.sellingPrice = sellingPrice;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getAuthor() {
@@ -103,68 +112,60 @@ public class DashboardModel {
         this.author = author;
     }
 
-    public String getCategory() {
-        return category;
+    public String getIsActive() {
+        return isActive;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
     }
 
-    public String getContent() {
-        return content;
+    public String getLanguage() {
+        return language;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
-    public String getSubject() {
-        return subject;
+    public String getEdition() {
+        return edition;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setEdition(String edition) {
+        this.edition = edition;
     }
 
-    public String getLength() {
-        return length;
+    public String getCategoryId() {
+        return categoryId;
     }
 
-    public void setLength(String length) {
-        this.length = length;
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public String getBreadth() {
-        return breadth;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setBreadth(String breadth) {
-        this.breadth = breadth;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
-    public String getHeight() {
-        return height;
+    public String getSubCategoryId() {
+        return subCategoryId;
     }
 
-    public void setHeight(String height) {
-        this.height = height;
+    public void setSubCategoryId(String subCategoryId) {
+        this.subCategoryId = subCategoryId;
     }
 
-    public String getWeight() {
-        return weight;
+    public String getSubCategoryName() {
+        return subCategoryName;
     }
 
-    public void setWeight(String weight) {
-        this.weight = weight;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
+    public void setSubCategoryName(String subCategoryName) {
+        this.subCategoryName = subCategoryName;
     }
 
     public String getTags() {
@@ -175,75 +176,11 @@ public class DashboardModel {
         this.tags = tags;
     }
 
-    public String getIsInCart() {
-        return isInCart;
+    public ArrayList<BookImageModels> getBookImages() {
+        return bookImages;
     }
 
-    public void setIsInCart(String isInCart) {
-        this.isInCart = isInCart;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getIsInWishList() {
-        return isInWishList;
-    }
-
-    public void setIsInWishList(String isInWishList) {
-        this.isInWishList = isInWishList;
-    }
-
-    public ArrayList<BookImageModels> getImages() {
-        return images;
-    }
-
-    public void setImages(ArrayList<BookImageModels> images) {
-        this.images = images;
-    }
-
-    public int getTotalRows() {
-        return totalRows;
-    }
-
-    public void setTotalRows(int totalRows) {
-        this.totalRows = totalRows;
-    }
-
-    public int getTotalPages() {
-        return totalPages;
-    }
-
-    public void setTotalPages(int totalPages) {
-        this.totalPages = totalPages;
-    }
-
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
+    public void setBookImages(ArrayList<BookImageModels> bookImages) {
+        this.bookImages = bookImages;
     }
 }

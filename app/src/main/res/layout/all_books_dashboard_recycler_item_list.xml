@@ -43,7 +43,8 @@
                     android:textColor="@color/black"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
-                    android:layout_margin="5dp" />
+                    android:layout_margin="5dp"
+                    android:visibility="gone"/>
                 <ImageView
                     android:id="@+id/heartIconToggle"
                     android:layout_width="30dp"
@@ -51,7 +52,8 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentTop="true"
                     android:layout_margin="5dp"
-                    android:src="@drawable/ic_heart_white" />
+                    android:src="@drawable/ic_heart_white"
+                    android:visibility="gone"/>
 
                 <!-- Dots Indicator (Below ViewPager2) -->
                 <LinearLayout

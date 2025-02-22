@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parentLayout"
     android:layout_width="match_parent"
@@ -74,18 +75,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins"
-                android:text="Name"
+                android:text="First Name"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/edtName"
+                android:id="@+id/edtFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/edt_bg"
                 android:drawableEnd="@drawable/user"
                 android:fontFamily="@font/poppins"
-                android:hint="Enter Name"
+                android:hint="Enter your First Name"
                 android:inputType="textPersonName"
                 android:paddingStart="20dp"
                 android:paddingEnd="10dp"
@@ -98,6 +99,103 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/poppins"
+                android:text="Last Name"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtLastName"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/edt_bg"
+                android:drawableEnd="@drawable/email"
+                android:fontFamily="@font/poppins"
+                android:hint="Enter your Last Name"
+                android:inputType="textEmailAddress"
+                android:paddingStart="20dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/mobileTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:layout_below="@id/edtLastName"
+                android:layout_marginTop="10dp"
+                android:text="Phone"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/numberLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_below="@id/mobileTxt"
+             >
+
+                <!-- Country Code Picker -->
+                <com.hbb20.CountryCodePicker
+                    android:id="@+id/ccp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    app:ccp_contentColor="@color/white"
+                    app:ccp_showFlag="false"
+                    app:ccp_showNameCode="false"
+                    app:ccp_showPhoneCode="true" />
+                <!-- Mobile Number EditText -->
+                <EditText
+                    android:id="@+id/edtNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/edt_bg"
+                    android:drawableEnd="@drawable/call"
+                    android:fontFamily="@font/poppins"
+                    android:hint="Enter Mobile Number"
+                    android:inputType="numberDecimal"
+                    android:maxLength="10"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="#A39E9E"
+                    android:textSize="14sp" />
+            </LinearLayout>
+            <RelativeLayout
+                android:id="@+id/checkBoxWhatsAppLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_below="@id/numberLinearLayout">
+
+                <CheckBox
+                    android:id="@+id/whatsAppCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+                <!-- Mobile Number EditText -->
+                <TextView
+                    android:id="@+id/whatsappTxtNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="Is this your WhatsApp Number?"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/whatsAppCheckBox"/>
+            </RelativeLayout>
+            <TextView
+                android:id="@+id/emailTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:layout_below="@id/checkBoxWhatsAppLinearLayout"
                 android:text="Email"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
@@ -109,144 +207,66 @@
                 android:background="@drawable/edt_bg"
                 android:drawableEnd="@drawable/email"
                 android:fontFamily="@font/poppins"
-                android:hint="Enter Email Address"
+                android:layout_below="@id/emailTxt"
+                android:hint="Enter your Email"
                 android:inputType="textEmailAddress"
                 android:paddingStart="20dp"
                 android:paddingEnd="10dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/dark_grey"
                 android:textSize="14sp" />
-
             <TextView
+                android:id="@+id/stateTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:fontFamily="@font/poppins"
-                android:text="Mobile"
+                android:layout_below="@id/edtEmail"
+                android:layout_marginTop="10dp"
+                android:text="State"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/edtMobile"
+            <Spinner
+                android:id="@+id/spinnerState"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/edt_bg"
-                android:drawableEnd="@drawable/call"
+                android:drawableEnd="@drawable/home"
                 android:fontFamily="@font/poppins"
-                android:hint="Enter Mobile"
-                android:inputType="numberDecimal"
-                android:maxLength="10"
+                android:layout_below="@id/stateTxt"
+                android:hint="Enter your Address"
+                android:inputType="text"
                 android:paddingStart="20dp"
                 android:paddingEnd="10dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/dark_grey"
                 android:textSize="14sp" />
-
             <TextView
+                android:id="@+id/cityTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:fontFamily="@font/poppins"
-                android:text="Password"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edt_bg">
-
-                <EditText
-                    android:id="@+id/edtPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="50dp"
-                    android:backgroundTint="@android:color/transparent"
-                    android:fontFamily="@font/poppins"
-                    android:hint="Enter Password"
-                    android:inputType="textPassword"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="10dp"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/dark_grey"
-                    android:textSize="14sp" />
-
-                <ImageView
-                    android:id="@+id/eyePassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:padding="10dp"
-                    android:src="@drawable/eye_open" />
-
-            </RelativeLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/poppins"
-                android:text="Confirm Password"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edt_bg">
-
-                <EditText
-                    android:id="@+id/edtRePassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="50dp"
-                    android:backgroundTint="@android:color/transparent"
-                    android:fontFamily="@font/poppins"
-                    android:hint="Re-Enter Password"
-                    android:inputType="textPassword"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="10dp"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/dark_grey"
-                    android:textSize="14sp" />
-
-                <ImageView
-                    android:id="@+id/eyeRePassword"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:padding="10dp"
-                    android:src="@drawable/eye_open" />
-
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_below="@id/spinnerState"
                 android:layout_marginTop="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:text="City"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
 
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/checkBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins"
-                    android:text="I agree to the "
-                    android:textColor="@color/white"
-                    android:outlineSpotShadowColor="@color/white"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins"
-                    android:text="privacy policy*"
-                    android:textColor="@color/seed" />
-
-            </LinearLayout>
-
+            <Spinner
+                android:id="@+id/spinnerCity"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/edt_bg"
+                android:drawableEnd="@drawable/home"
+                android:fontFamily="@font/poppins"
+                android:layout_below="@id/cityTxt"
+                android:hint="Enter your Address"
+                android:inputType="text"
+                android:paddingStart="20dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/dark_grey"
+                android:textSize="14sp" />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSignUp"
                 android:layout_width="match_parent"
@@ -289,7 +309,7 @@
                     android:fontFamily="@font/poppins"
                     android:padding="5dp"
                     android:text="Login"
-                    android:textColor="@color/white"
+                    android:textColor="@color/yellow"
                     android:textStyle="bold" />
 
             </LinearLayout>
