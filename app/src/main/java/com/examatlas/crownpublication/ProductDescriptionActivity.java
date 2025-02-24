@@ -17,6 +17,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -67,11 +68,16 @@ public class ProductDescriptionActivity extends AppCompatActivity {
     RecyclerView relatedBookRecyclerView;
     DashboardAdapter dashboardAdapter;
     DashboardModel dashboardModel;
+    Boolean isBuyNowClicked = false;
+    Dialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_description);
+
+        sessionManager = new SessionManager(this);
+        authToken = sessionManager.getUserData().get("authToken");
 
         bookImageView = findViewById(R.id.imgBook);
         dotLayout = findViewById(R.id.indicatorLayout);
@@ -101,9 +107,6 @@ public class ProductDescriptionActivity extends AppCompatActivity {
         tagsStr = intent.getStringExtra("bookTags");
         contentStr = intent.getStringExtra("bookContent");
         bookImageURLArrayList = intent.getStringArrayListExtra("bookImage");
-
-        sessionManager = new SessionManager(this);
-        authToken = sessionManager.getUserData().get("authToken");
 
         bookTitle.setText(titleStr);
         category.setText(categoryStr);
@@ -152,10 +155,31 @@ public class ProductDescriptionActivity extends AppCompatActivity {
         // Load the modified HTML content
         webView.loadData(fullHtmlContent, "text/html", "UTF-8");
 
+        String bookIds = sessionManager.getCartBookIds();  // Get cart book IDs from session manager
+        Log.e("bookIds",bookIds);
+        if (!bookIds.isEmpty()) {  // Ensure it's not empty
+            String[] bookIdArray = bookIds.split(",");  // Split by commas to get individual book IDs
+            for (String bookId : bookIdArray) {
+                if (bookId.equals(bookIdStr)) {  // Check if currentBook's ID matches the one in the list
+                    addToCartBtn.setVisibility(View.GONE);  // Hide the "Add to Cart" button
+                    goToCartBtn.setVisibility(View.VISIBLE);  // Show the "Go to Cart" button
+                    break;  // Exit the loop once the book ID is found
+                }
+            }
+        }
+
         addToCartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (sessionManager.IsLoggedIn()) {
+                    progressDialog = new Dialog(ProductDescriptionActivity.this);
+                    progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    progressDialog.setContentView(R.layout.progress_bar_drawer);
+                    progressDialog.setCancelable(false);
+                    progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                    progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                    progressDialog.show();
                     addToCartFunction();
                 } else {
                     new MaterialAlertDialogBuilder(ProductDescriptionActivity.this)
@@ -190,10 +214,16 @@ public class ProductDescriptionActivity extends AppCompatActivity {
         butNowBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog = new Dialog(ProductDescriptionActivity.this);
+                progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                progressDialog.setContentView(R.layout.progress_bar_drawer);
+                progressDialog.setCancelable(false);
+                progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                progressDialog.show();
                 addToCartFunction();
-                Intent intent1 = new Intent(ProductDescriptionActivity.this,CartViewActivity.class);
-                startActivity(intent1);
-                finish();
+                isBuyNowClicked = true;
             }
         });
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -271,12 +301,13 @@ public class ProductDescriptionActivity extends AppCompatActivity {
 
     private void addToCartFunction() {
         String userId = sessionManager.getUserData().get("user_id");
-        String addToCartUrl = Constant.BASE_URL + "cart/add";
+        String addToCartUrl = Constant.BASE_URL + "cart";
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("userId", userId);
-            jsonObject.put("bookId", bookIdStr);
+            jsonObject.put("quantity", 1);
+            jsonObject.put("productId", bookIdStr);
+            jsonObject.put("type", "book");
         } catch (JSONException e) {
             e.printStackTrace();
             return;
@@ -286,12 +317,17 @@ public class ProductDescriptionActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            sessionManager.setCartItemQuantity();
                             String status = response.getString("success");
-                            String message = response.getString("message");
-                            Toast.makeText(ProductDescriptionActivity.this, message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProductDescriptionActivity.this, "Book added to Cart", Toast.LENGTH_SHORT).show();
                             addToCartBtn.setVisibility(View.GONE);
                             goToCartBtn.setVisibility(View.VISIBLE);
-
+                            if (isBuyNowClicked) {
+                                Intent intent1 = new Intent(ProductDescriptionActivity.this,CartViewActivity.class);
+                                startActivity(intent1);
+                                finish();
+                            }
+                            progressDialog.dismiss();
                         } catch (JSONException e) {
                             Toast.makeText(ProductDescriptionActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
@@ -299,6 +335,7 @@ public class ProductDescriptionActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
                 String errorMessage = "Error: " + error.toString();
                 if (error.networkResponse != null) {
                     try {

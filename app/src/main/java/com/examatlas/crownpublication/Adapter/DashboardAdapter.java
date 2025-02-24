@@ -2,10 +2,13 @@ package com.examatlas.crownpublication.Adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -15,10 +18,13 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,7 +42,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.crownpublication.Adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.crownpublication.CartViewActivity;
+import com.examatlas.crownpublication.DashboardActivity;
 import com.examatlas.crownpublication.LoginActivity;
+import com.examatlas.crownpublication.MainActivity;
 import com.examatlas.crownpublication.Models.DashboardModel;
 import com.examatlas.crownpublication.Models.extraModels.BookImageModels;
 import com.examatlas.crownpublication.ProductDescriptionActivity;
@@ -65,6 +73,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
     SessionManager sessionManager;
     ArrayList bookImageUrls;
     SpannableStringBuilder spannableText;
+    Dialog progressDialog;
 
     public DashboardAdapter(Context context, ArrayList<DashboardModel> hardBookECommPurchaseModelArrayList) {
         this.originalHardBookECommPurchaseModelArrayList = new ArrayList<>(hardBookECommPurchaseModelArrayList);
@@ -87,6 +96,22 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
     public void onBindViewHolder(@NonNull DashboardAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         DashboardModel currentBook = hardBookECommPurchaseModelArrayList.get(position);
         holder.itemView.setTag(currentBook);
+
+        String bookIds = sessionManager.getCartBookIds();  // Get cart book IDs from session manager
+        Log.e("bookIds",bookIds);
+        if (!bookIds.isEmpty()) {  // Ensure it's not empty
+            String[] bookIdArray = bookIds.split(",");  // Split by commas to get individual book IDs
+
+            for (String bookId : bookIdArray) {
+                if (bookId.equals(currentBook.getBookId())) {  // Check if currentBook's ID matches the one in the list
+                    holder.addToCartBtn.setVisibility(View.GONE);  // Hide the "Add to Cart" button
+                    holder.goToCartBtn.setVisibility(View.VISIBLE);  // Show the "Go to Cart" button
+                    break;  // Exit the loop once the book ID is found
+                }
+            }
+        }
+
+
 
         // Calculate prices and discount
         String purchasingPrice = currentBook.getSellingPrice();
@@ -177,6 +202,14 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
             public void onClick(View view) {
 
                 if (sessionManager.IsLoggedIn()) {
+                    progressDialog = new Dialog(context);
+                    progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    progressDialog.setContentView(R.layout.progress_bar_drawer);
+                    progressDialog.setCancelable(false);
+                    progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                    progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                    progressDialog.show();
 
                     String bookID = currentBook.getBookId();
                     String addToCartUrl = Constant.BASE_URL + "cart";
@@ -195,10 +228,18 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
                                 @Override
                                 public void onResponse(JSONObject response) {
                                     try {
+                                        sessionManager.setCartItemQuantity();
                                         String status = response.getString("success");
                                         Toast.makeText(context, "Book added to Cart", Toast.LENGTH_SHORT).show();
                                         holder.addToCartBtn.setVisibility(View.GONE);
                                         holder.goToCartBtn.setVisibility(View.VISIBLE);
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                ((DashboardActivity) context).setCartItemCountTxt();
+                                                progressDialog.dismiss();
+                                            }
+                                        }, 1000);
                                     } catch (JSONException e) {
                                         Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
                                     }
@@ -206,6 +247,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
                             }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            progressDialog.dismiss();
                             String errorMessage = "Error: " + error.toString();
                             if (error.networkResponse != null) {
                                 try {

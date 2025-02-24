@@ -73,10 +73,13 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         holder.statusTxt.setText(statusStr);
 
         if (statusStr.equalsIgnoreCase("Confirmed")) {
+            holder.trackTxt.setVisibility(View.VISIBLE);
             holder.statusTxt.setTextColor(ContextCompat.getColor(context, R.color.green));
         } else if (statusStr.equalsIgnoreCase("Pending")) {
+            holder.trackTxt.setVisibility(View.GONE);
             holder.statusTxt.setTextColor(ContextCompat.getColor(context, R.color.mat_yellow));
         } else {
+
             holder.statusTxt.setTextColor(ContextCompat.getColor(context, R.color.red));
         }
 

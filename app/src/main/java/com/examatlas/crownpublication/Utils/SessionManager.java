@@ -4,8 +4,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SessionManager {
 
@@ -30,6 +41,9 @@ public class SessionManager {
     public static final String CreatedAt = "createdAt";
     public static final String UpdatedAt = "updatedAt";
     public static final String IsLogin = "IsLoggedIn";
+    public static String CartQuantity = "0";
+    public static ArrayList<String> CartItemBookIdArrayList = new ArrayList<>();
+    public static String CartItemBookId = "WishListIds";
 
     public SessionManager(Context context) {
         ctx = context;
@@ -96,5 +110,82 @@ public class SessionManager {
     }
     public boolean IsLoggedIn() {
         return pref.getBoolean(IsLogin, false);
+    }
+    public void setCartItemQuantity(){
+        String paginatedURL = Constant.BASE_URL + "cart";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, paginatedURL, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+//                        progressBar.setVisibility(View.GONE);
+                            boolean status = response.getBoolean("success");
+                            if (status) {
+                                JSONObject jsonObject = response.getJSONObject("data");
+                                String cartId = jsonObject.getString("_id");
+                                JSONArray itemsArray = jsonObject.getJSONArray("items");
+                                CartItemBookIdArrayList.clear();
+                                for (int i = 0; i < itemsArray.length(); i++){
+                                    String bookId = itemsArray.getJSONObject(i).getJSONObject("product").getString("_id");
+                                    CartItemBookIdArrayList.add(bookId);
+                                }
+                                saveCartBookIds();
+                                // Count the cart items
+                                int cartItemCount = itemsArray.length();
+                                editor.remove(CartQuantity);
+                                editor.putString(CartQuantity, String.valueOf(cartItemCount));  // Store in SharedPreferences
+                                editor.apply();
+                            }
+                        } catch (JSONException e) {
+                            Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                // Parse the error response
+                                String jsonError = new String(error.networkResponse.data);
+                                JSONObject jsonObject = new JSONObject(jsonError);
+                                String message = jsonObject.optString("message", "Unknown error");
+                                // Now you can use the message
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.e("BlogFetchError", errorMessage);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + getUserData().get("authToken"));
+                return headers;
+            }
+        };
+        MySingleton.getInstance(ctx.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+    }
+    public String getCartQuantity(){
+        return pref.getString(CartQuantity,"0");
+    }
+    public void saveCartBookIds() {
+        StringBuilder cartIds = new StringBuilder();
+        for (int i = 0; i < CartItemBookIdArrayList.size(); i++) {
+            if (i > 0) cartIds.append(",");  // Avoid leading commas
+            cartIds.append(CartItemBookIdArrayList.get(i));
+            Log.e("Session" + i,CartItemBookIdArrayList.get(i));
+        }
+        Log.e("allId",cartIds.toString());
+        // Corrected: Save the string with a key, e.g., "cart_book_ids"
+        editor.putString(CartItemBookId, cartIds.toString());
+        editor.apply();
+    }
+
+    public String getCartBookIds(){
+        return pref.getString(CartItemBookId,"");
     }
 }

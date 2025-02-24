@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        sessionManager.setCartItemQuantity();
                         Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
                         startActivity(intent);
                         finishAffinity();

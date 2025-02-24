@@ -83,12 +83,15 @@ public class DashboardActivity extends AppCompatActivity {
     private int currentPage = 1;
     private int totalPages = 1;
     private final int itemsPerPage = 10;
-    TextView showAllCategoryBookTxt,noBookInThisCategoryTxt;
+    TextView showAllCategoryBookTxt,noBookInThisCategoryTxt,cartItemCountTxt;
     private boolean isSearchViewFocused = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dasbboard);
+
+        sessionManager = new SessionManager(this);
+        authToken = sessionManager.getUserData().get("authToken");
 
         parentLayout = findViewById(R.id.parentLayout);
         scrollViewAboveBookRecycler = findViewById(R.id.scrollViewAboveBookRecycler);
@@ -105,6 +108,9 @@ public class DashboardActivity extends AppCompatActivity {
         showAllCategoryBookTxt = findViewById(R.id.showAllBookCategoryTxt);
         showAllCategoryBookTxt.setClickable(false);
 
+        cartItemCountTxt = findViewById(R.id.cartItemCountTxt);
+        setCartItemCountTxt();
+
         noDataLayout = findViewById(R.id.noDataLayout);
         progressBar = findViewById(R.id.progressBar);
         moreItemLoadProgressBar = findViewById(R.id.moreItemLoadProgressBar);
@@ -118,9 +124,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         examCategoryRecyclerView = findViewById(R.id.examCategory);
         examCategoryRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
-
-        sessionManager = new SessionManager(this);
-        authToken = sessionManager.getUserData().get("authToken");
 
         sliderArrayList = new ArrayList<>();
         sliderArrayList.add(new SlideModel(R.drawable.image1, ScaleTypes.CENTER_CROP));
@@ -816,6 +819,16 @@ public class DashboardActivity extends AppCompatActivity {
         getAllBooks();
         if (dashboardAdapter != null) {
             dashboardAdapter.notifyDataSetChanged();
+        }
+        setCartItemCountTxt();
+    }
+    public void setCartItemCountTxt(){
+        String quantity = sessionManager.getCartQuantity();
+        if (!quantity.equals("0")) {
+            cartItemCountTxt.setVisibility(View.VISIBLE);
+            cartItemCountTxt.setText(quantity);
+        }else {
+            cartItemCountTxt.setVisibility(View.GONE);
         }
     }
 }

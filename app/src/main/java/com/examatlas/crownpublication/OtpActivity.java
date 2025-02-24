@@ -244,6 +244,7 @@ public class OtpActivity extends AppCompatActivity {
                                             Log.d("Organisation", "Organisation ID: " + organisationId);
                                         }
                                         sessionManager.saveLoginDetails2(user_id, firstName, lastName,null, email, state, city, role, isActive, step, authToken, createdAt, updatedAt, null);
+                                        sessionManager.setCartItemQuantity();
                                         Intent intent = new Intent(OtpActivity.this, DashboardActivity.class);
                                         startActivity(intent);
                                         finish();

@@ -245,6 +245,7 @@ public class BookOrderPaymentActivity extends AppCompatActivity implements Payme
                         try {
                             String success = response.getString("success");
                             if (success.equals("true")) {
+                                sessionManager.setCartItemQuantity();
                                 Intent intent = new Intent(BookOrderPaymentActivity.this, OrderSuccessFullyPlacedActivity.class);
                                 Toast.makeText(BookOrderPaymentActivity.this, paymentStatusMessageStr, Toast.LENGTH_SHORT).show();
                                 verifyingProgressDialog.dismiss();

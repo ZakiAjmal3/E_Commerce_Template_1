@@ -113,7 +113,7 @@
         app:itemRadius="10dp"
         app:itemSpacing="10dp"
         app:itemWidth="45dp"
-        app:lineColor="@color/seed"
+        app:lineColor="@color/yellow"
         app:lineWidth="2dp"
         app:viewType="rectangle" />
     <LinearLayout

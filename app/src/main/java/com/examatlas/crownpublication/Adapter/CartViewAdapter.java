@@ -1,7 +1,9 @@
 package com.examatlas.crownpublication.Adapter;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -9,9 +11,12 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -52,7 +57,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
     private final SessionManager sessionManager;
     private final String authToken;
     private final String[] quantityArray = {"1", "2", "3", "more"};
-
+    Dialog progressDialog;
     public CartViewAdapter(Context context, ArrayList<CartViewModel> cartViewModelArrayList) {
         this.context = context;
         this.cartViewModelArrayList = cartViewModelArrayList;
@@ -254,6 +259,14 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
 //    }
 
     private void deleteBook(CartViewModel currentBook) {
+        progressDialog = new Dialog(context);
+        progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        progressDialog.setContentView(R.layout.progress_bar_drawer);
+        progressDialog.setCancelable(false);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+        progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+        progressDialog.show();
         String deleteUrl = Constant.BASE_URL + "cart/remove/" + currentBook.getBookId();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, deleteUrl, null,
                 new Response.Listener<JSONObject>() {
@@ -262,6 +275,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
                         try {
                             boolean status = response.getBoolean("success");
                             if (status) {
+                                sessionManager.setCartItemQuantity();
                                 Toast.makeText(context, "Item removed from the cart", Toast.LENGTH_SHORT).show();
                                 cartViewModelArrayList.remove(currentBook);
                                 if (context instanceof CartViewActivity) {
@@ -272,6 +286,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
                                     ((CreateDeliveryAddressActivity) context).setUpPriceDetails();
                                 }
                                 notifyDataSetChanged();
+                                progressDialog.dismiss();
                             }
                         } catch (JSONException e) {
                             Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
@@ -280,6 +295,7 @@ public class CartViewAdapter extends RecyclerView.Adapter<CartViewAdapter.ViewHo
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
                 String errorMessage = "Error: " + error.toString();
                 if (error.networkResponse != null) {
                     try {
