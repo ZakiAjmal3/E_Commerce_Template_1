@@ -79,7 +79,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             holder.trackTxt.setVisibility(View.GONE);
             holder.statusTxt.setTextColor(ContextCompat.getColor(context, R.color.mat_yellow));
         } else {
-
+            holder.trackTxt.setVisibility(View.GONE);
             holder.statusTxt.setTextColor(ContextCompat.getColor(context, R.color.red));
         }
 

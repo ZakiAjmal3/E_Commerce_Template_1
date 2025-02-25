@@ -447,7 +447,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
                         dashboardModel.getTags().toLowerCase().contains(lowerCaseQuery) ||
                         dashboardModel.getPrice().toLowerCase().contains(lowerCaseQuery) ||
                         dashboardModel.getAuthor().toLowerCase().contains(lowerCaseQuery) ||
-                        spannableText.toString().toLowerCase().contains(lowerCaseQuery)) {
+                        dashboardModel.getSellingPrice().toLowerCase().contains(lowerCaseQuery)) {
                     hardBookECommPurchaseModelArrayList.add(dashboardModel);
                     heartToggleStates.add(false); // Ensure state is added for new entries
                 }

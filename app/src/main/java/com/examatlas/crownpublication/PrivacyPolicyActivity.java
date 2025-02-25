@@ -40,10 +40,10 @@ public class PrivacyPolicyActivity extends AppCompatActivity {
         String contentStr = " <div className=\"min-h-screen  py-8 px-4 sm:px-6 lg:px-8 mt-20 mb-20\">\n" +
                 "        </h1>\n" +
                 "        <p className=\"text-lg text-gray-700 mb-4\">\n" +
-                "          <strong>Effective Date:</strong> [Insert Date]\n" +
+                "          <strong>Effective Date:</strong> 24-02-2025\n" +
                 "        </p>\n" +
                 "        <p className=\"text-lg text-gray-700 mb-4\">\n" +
-                "          Welcome to Crown Publications (“Company,” “we,” “our,” “us”). Your privacy is important to us. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website [crownpublications.in](http://crownpublications.in), use our services, or engage with us in other ways. Please read this policy carefully. By using our website and services, you agree to the collection and use of information in accordance with this policy.\n" +
+                "          <strong>Welcome to Crown Publications (“Company,” “we,” “our,” “us”)</strong>. Your privacy is important to us. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website [crownpublications.in](http://crownpublications.in), use our services, or engage with us in other ways. Please read this policy carefully. By using our website and services, you agree to the collection and use of information in accordance with this policy.\n" +
                 "        </p>\n" +
                 "        \n" +
                 "        <section className=\"mb-8\">\n" +

@@ -45,7 +45,7 @@
             android:textStyle="bold"
             />
     </RelativeLayout>
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/topBar"
@@ -74,15 +74,6 @@
                     android:textStyle="bold"
                     android:textColor="@color/black"
                     android:layout_marginTop="12dp"/>
-
-                <Button
-                    android:id="@+id/changeAddressBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Edit Address"
-                    android:layout_alignParentEnd="true"
-                    android:backgroundTint="@color/md_theme_dark_errorContainer"
-                    android:textColor="@color/white"/>
 
                 <View
                     android:id="@+id/line5"
@@ -292,7 +283,7 @@
                     android:layout_marginTop="15dp" />
             </RelativeLayout>
         </RelativeLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
     <RelativeLayout
         android:id="@+id/noDataLayout"
         android:layout_width="wrap_content"

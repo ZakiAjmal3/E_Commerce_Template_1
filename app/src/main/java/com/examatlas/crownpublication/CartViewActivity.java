@@ -284,7 +284,7 @@ public class CartViewActivity extends AppCompatActivity {
 
     }
     Dialog drawerDialog;
-    LinearLayout layoutHome, layoutCart, layoutOrderHistory,layoutProfile, layoutLogout, layoutShare, layoutAboutUs, layoutPrivacy, layoutTerms;
+    LinearLayout layoutHome, layoutCart, layoutOrderHistory,layoutProfile,layoutOrderInBulk,layoutJoinAsAuthor, layoutLogout,layoutLogin, layoutShare, layoutAboutUs, layoutPrivacy, layoutTerms;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
     MaterialCardView cardBack;
@@ -298,7 +298,12 @@ public class CartViewActivity extends AppCompatActivity {
         layoutCart = drawerDialog.findViewById(R.id.layoutCart);
         layoutOrderHistory = drawerDialog.findViewById(R.id.layoutOrderHistory);
         layoutProfile = drawerDialog.findViewById(R.id.layoutProfile);
+        layoutOrderInBulk = drawerDialog.findViewById(R.id.layoutBulkOrder);
+        layoutOrderInBulk.setVisibility(View.GONE);
+        layoutJoinAsAuthor = drawerDialog.findViewById(R.id.layoutJoinAsAuthor);
+        layoutJoinAsAuthor.setVisibility(View.GONE);
         layoutLogout = drawerDialog.findViewById(R.id.layoutLogout);
+        layoutLogin = drawerDialog.findViewById(R.id.layoutLogin);
         layoutShare = drawerDialog.findViewById(R.id.layoutShare);
         layoutAboutUs = drawerDialog.findViewById(R.id.layoutAboutUs);
         layoutPrivacy = drawerDialog.findViewById(R.id.layoutPrivacy);
@@ -308,8 +313,16 @@ public class CartViewActivity extends AppCompatActivity {
         cardBack = drawerDialog.findViewById(R.id.cardBack);
         imgUser = drawerDialog.findViewById(R.id.imgUser);
 
-        txtUsername.setText(sessionManager.getUserData().get("name"));
+        txtUsername.setText(sessionManager.getUserData().get("firstName") + " " + sessionManager.getUserData().get("lastName"));
         txtUserEmail.setText(sessionManager.getUserData().get("email"));
+
+        if (sessionManager.IsLoggedIn()){
+            layoutLogin.setVisibility(View.GONE);
+            layoutLogout.setVisibility(View.VISIBLE);
+        }else {
+            layoutLogout.setVisibility(View.GONE);
+            layoutLogin.setVisibility(View.VISIBLE);
+        }
 
         layoutHome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -366,7 +379,34 @@ public class CartViewActivity extends AppCompatActivity {
             }
         });
 
-
+        layoutAboutUs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CartViewActivity.this, AboutUsActivity.class);
+                startActivity(intent);
+            }
+        });
+        layoutLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CartViewActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+        layoutPrivacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CartViewActivity.this, PrivacyPolicyActivity.class);
+                startActivity(intent);
+            }
+        });
+        layoutTerms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CartViewActivity.this, TermsAndConditionActivity.class);
+                startActivity(intent);
+            }
+        });
         drawerDialog.show();
         drawerDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         drawerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

@@ -134,19 +134,19 @@ public class DashboardActivity extends AppCompatActivity {
 //        getBannerImage();
         getCategory();
 
-        searchView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!TextUtils.isEmpty(searchView.getQuery())) {
-                    // When SearchView is clicked and it's empty, hide the whole layout
-                    hideLayout();
-                    openKeyboard();
-                } else {
-                    // If there's text in the SearchView, just open the keyboard
-                    openKeyboard();
-                }
-            }
-        });
+//        searchView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (!TextUtils.isEmpty(searchView.getQuery())) {
+//                    // When SearchView is clicked and it's empty, hide the whole layout
+//                    hideLayout();
+//                    openKeyboard();
+//                } else {
+//                    // If there's text in the SearchView, just open the keyboard
+//                    openKeyboard();
+//                }
+//            }
+//        });
 
         // Set up touch listener for the parent layout
         parentLayout.setOnTouchListener(new View.OnTouchListener() {
@@ -178,13 +178,6 @@ public class DashboardActivity extends AppCompatActivity {
                 // Call the filter method when the search text changes
                 if (dashboardAdapter != null) {
                     dashboardAdapter.filter(newText);
-                }
-
-                // If there is text, keep the layout hidden, otherwise show it
-                if (TextUtils.isEmpty(newText)) {
-                    showLayout();
-                } else {
-                    hideLayout();
                 }
                 return true;
             }

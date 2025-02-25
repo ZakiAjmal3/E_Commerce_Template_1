@@ -65,7 +65,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
     String cartUrl = Constant.BASE_URL + "cart",authToken,userId;
     RelativeLayout noDataLayout,priceDetailRelativeLayout,deliveryAddressRelativeLayout,bottomStickyButtonLayout;
     ProgressBar progressBar;
-    Button goToCheckout,changeAddressBtn,addNewAddress;
+    Button goToCheckout,addNewAddress;
     TextView noDeliveryAddressTxt,priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
     int totalSellPrice = 0,totalAmountWithOutDeliveryCharges = 0, deliveryCharges;
     int totalItems,totalOriginalPrice = 0,totalDiscount = 0;
@@ -84,7 +84,6 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
         bottomStickyButtonLayout = findViewById(R.id.bottomStickyRelativeLayout);
         progressBar = findViewById(R.id.cartProgress);
         goToCheckout = findViewById(R.id.gotoCheckOut);
-        changeAddressBtn = findViewById(R.id.changeAddressBtn);
         addNewAddress = findViewById(R.id.addNewAddress);
 
         noDeliveryAddressTxt = findViewById(R.id.noDeliveryAddressTxt);
@@ -108,7 +107,6 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
 
         fetchCartItems();
         getBillingAddress();
-        changeEditAddressBtnClickability();
 
         backBtnTopBar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,20 +114,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        changeAddressBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CreateDeliveryAddressAdapter adapter = (CreateDeliveryAddressAdapter) deliveryAddressRecyclerView.getAdapter();
-                CreateDeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
-                if (adapter != null) {
-                    if (selectedAddress != null) {
-                        openPopUpAddAddress(selectedAddress);
-                    } else {
-                        Toast.makeText(CreateDeliveryAddressActivity.this, "Please select an address to edit.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
+
         addNewAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,24 +125,18 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 CreateDeliveryAddressAdapter adapter = (CreateDeliveryAddressAdapter) deliveryAddressRecyclerView.getAdapter();
-                CreateDeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
-                if (selectedAddress == null) {
-                    Toast.makeText(CreateDeliveryAddressActivity.this, "Please select an address to continue.", Toast.LENGTH_SHORT).show();
+                if (adapter!=null) {
+                    CreateDeliveryAddressModel selectedAddress = adapter.getSelectedAddress();
+                    if (selectedAddress == null) {
+                        Toast.makeText(CreateDeliveryAddressActivity.this, "Please select an address to continue.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        openOrderSummaryDialog(selectedAddress);
+                    }
                 }else {
-                    openOrderSummaryDialog(selectedAddress);
+                    Toast.makeText(CreateDeliveryAddressActivity.this, "No delivery Address", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-    }
-    public void changeEditAddressBtnClickability(){
-        if (createDeliveryAddressModelArrayList.isEmpty()){
-            changeAddressBtn.setEnabled(false);
-            changeAddressBtn.setVisibility(View.GONE);
-        }else {
-            changeAddressBtn.setEnabled(true);
-            changeAddressBtn.setVisibility(View.VISIBLE);
-        }
     }
     RecyclerView itemDetailsRecyclerView;
     BookOrderSummaryItemsDetailsRecyclerViewModel bookOrderSummaryItemsDetailsRecyclerViewModel;
@@ -196,76 +175,14 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
         proceedToPaymentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String checkOutURL = Constant.BASE_URL + "order/checkout";
-                addressId = selectedAddress.getAddressId();
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("addressId",addressId);
-                    jsonObject.put("discounts",totalDiscount);
-                    jsonObject.put("finalAmount",totalAmountWithOutDeliveryCharges);
-                    jsonObject.put("paymentMethod","Razorpay");
-                    jsonObject.put("totalAmount",totalOriginalPrice);
-                    jsonObject.put("taxAmount",0);
-                    jsonObject.put("shippingCharges",deliveryCharges);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                // Make the API request to the checkout URL
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, checkOutURL, jsonObject,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                Log.e("responseData", response.toString());
-                                try {
-                                    String status = response.getString("success");
-                                    JSONObject paymentObj = response.getJSONObject("payment");
-                                    String orderId = paymentObj.getString("orderId");
-                                    String razorpayOrderId = paymentObj.getString("razorpayOrderId");
-                                    String finalAmount = paymentObj.getString("finalAmount");
-                                    if (status.equals("true")) {
-                                        Intent intent = new Intent(CreateDeliveryAddressActivity.this, BookOrderPaymentActivity.class);
-                                        intent.putExtra("amount", finalAmount);
-                                        intent.putExtra("orderId", orderId);
-                                        intent.putExtra("razorpayOrderId", razorpayOrderId);
-                                        startActivity(intent);
-                                    }
-                                } catch (JSONException e) {
-                                    Log.e("JSON_ERROR", "Error parsing JSON: " + e.getMessage());
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        String errorMessage = error.toString();
-                        Toast.makeText(CreateDeliveryAddressActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                        Log.e("onErrorResponse", errorMessage);
-                        if (error.networkResponse != null) {
-                            try {
-                                // Parse the error response
-                                String jsonError = new String(error.networkResponse.data);
-                                JSONObject jsonObject = new JSONObject(jsonError);
-                                String message = jsonObject.optString("message", "Unknown error");
-                                // Now you can use the message
-                                Toast.makeText(CreateDeliveryAddressActivity.this, message, Toast.LENGTH_LONG).show();
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }) {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> headers = new HashMap<>();
-                        headers.put("Content-Type", "application/json");
-                        headers.put("Authorization", "Bearer " + authToken);
-                        return headers;
-                    }
-                };
-
-                // Add the request to the request queue
-                MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+                Intent intent = new Intent(CreateDeliveryAddressActivity.this,ChoosingPaymentMethod.class);
+                intent.putExtra("totalAmount",totalSellPrice);
+                intent.putExtra("shippingCharges",deliveryCharges);
+                intent.putExtra("discounts",totalDiscount);
+                intent.putExtra("finalAmount",totalAmountWithOutDeliveryCharges);
+                intent.putExtra("itemCount",totalItems);
+                intent.putExtra("addressId",selectedAddress.getAddressId());
+                startActivity(intent);
             }
         });
 
@@ -291,7 +208,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
 
     }
 
-    private void getBillingAddress() {
+    public void getBillingAddress() {
         String addressURL = Constant.BASE_URL + "address";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, addressURL, null,
                 new Response.Listener<JSONObject>() {
@@ -301,6 +218,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                             Log.e("success",response.toString());
                             boolean status = response.getBoolean("success");
                             if (status){
+                                createDeliveryAddressModelArrayList.clear();
                                 JSONArray jsonArray = response.getJSONArray("data");
                                 for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -574,7 +492,6 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                             if (status.equals("true")) {
                                 billingAddressInputDialogBox.dismiss();
                                 getBillingAddress();
-                                changeEditAddressBtnClickability();
                             }
                         } catch (JSONException e) {
                             Toast.makeText(CreateDeliveryAddressActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
@@ -646,7 +563,6 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
                             if (status.equals("true")) {
                                 billingAddressInputDialogBox.dismiss();
                                 getBillingAddress();
-                                changeEditAddressBtnClickability();
                             }
                         } catch (JSONException e) {
                             Toast.makeText(CreateDeliveryAddressActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();

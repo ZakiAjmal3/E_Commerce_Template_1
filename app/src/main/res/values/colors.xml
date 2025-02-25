@@ -7,6 +7,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="seed">#15b0fd</color>
     <color name="green">#0C9700</color>
+    <color name="blue">#0073FF</color>
+    <color name="whiteSeed">#F0F4FB</color>
     <color name="md_theme_light_primary">#006493</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#CAE6FF</color>
@@ -67,6 +69,8 @@
     <color name="md_theme_dark_surfaceTint">#8DCDFF</color>
     <color name="md_theme_dark_outlineVariant">#41474D</color>
     <color name="md_theme_dark_scrim">#000000</color>
+    <color name="light_dark_grey">#EFEDED</color>
+    <color name="light_dark_grey2">#C5C4C4</color>
     <color name="dark_grey">#776F6F</color>
     <color name="mat_yellow">#F1B501</color>
     <color name="yellow">#FFCD00</color>

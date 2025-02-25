@@ -21,6 +21,14 @@
         android:textSize="16sp"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="5dp"/>
+    <ImageView
+        android:id="@+id/threeDotsBtn"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/ic_three_dot"
+        android:layout_alignParentEnd="true"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+        android:padding="5dp"/>
 
     <TextView
         android:id="@+id/addressFullTxt"
