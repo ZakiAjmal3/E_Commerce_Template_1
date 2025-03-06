@@ -82,6 +82,11 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             holder.trackTxt.setVisibility(View.GONE);
             holder.statusTxt.setTextColor(ContextCompat.getColor(context, R.color.red));
         }
+        for (int i = 0; i < orderHistoryModelsArrayList.get(position).getOrderItemsArrayList().size(); i++){
+            if (orderHistoryModelsArrayList.get(position).getOrderItemsArrayList().get(i).getBookType().equals("ebook")){
+                holder.trackTxt.setVisibility(View.GONE);
+            }
+        }
 
         holder.methodTxt.setTextColor(ContextCompat.getColor(context, R.color.green));
         holder.methodTxt.setText(orderHistoryModelsArrayList.get(position).getPaymentMethod());

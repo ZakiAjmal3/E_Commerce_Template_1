@@ -69,6 +69,7 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
     TextView noDeliveryAddressTxt,priceItemsTxt,priceOriginalTxt,totalDiscountTxt,deliveryTxt,totalAmountTxt1,totalAmountTxt2;
     int totalSellPrice = 0,totalAmountWithOutDeliveryCharges = 0, deliveryCharges;
     int totalItems,totalOriginalPrice = 0,totalDiscount = 0;
+    Boolean isEBookPresent = false;
     String addressId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,13 +176,15 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
         proceedToPaymentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(CreateDeliveryAddressActivity.this,ChoosingPaymentMethod.class);
+                Intent intent = new Intent(CreateDeliveryAddressActivity.this, ChoosingPaymentMethodActivity.class);
                 intent.putExtra("totalAmount",totalSellPrice);
                 intent.putExtra("shippingCharges",deliveryCharges);
                 intent.putExtra("discounts",totalDiscount);
                 intent.putExtra("finalAmount",totalAmountWithOutDeliveryCharges);
                 intent.putExtra("itemCount",totalItems);
                 intent.putExtra("addressId",selectedAddress.getAddressId());
+                intent.putExtra("isEBookPresent",isEBookPresent);
+                Log.e("intent",isEBookPresent.toString());
                 startActivity(intent);
             }
         });
@@ -666,12 +669,15 @@ public class CreateDeliveryAddressActivity extends AppCompatActivity {
 
                                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                                     String quantity = jsonObject2.getString("quantity");
-                                    String type = jsonObject2.getString("type");
 
                                     JSONObject jsonObject3 = jsonObject2.getJSONObject("product");
 
                                     String bookId = jsonObject3.getString("_id");
                                     String title = jsonObject3.getString("title");
+                                    String type = jsonObject3.getString("type");
+                                    if (type.equals("ebook")){
+                                        isEBookPresent = true;
+                                    }
                                     String sku = jsonObject3.getString("sku");
                                     String slug = jsonObject3.getString("slug");
                                     String publication = jsonObject3.getString("publication");

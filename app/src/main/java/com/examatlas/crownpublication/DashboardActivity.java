@@ -79,7 +79,7 @@ public class DashboardActivity extends AppCompatActivity {
     public String currentFrag = "HOME";
     SessionManager sessionManager;
     String authToken;
-    private final String bookURL = Constant.BASE_URL + "books";
+    private final String bookURL = Constant.BASE_URL + "books?type=book";
     private int currentPage = 1;
     private int totalPages = 1;
     private final int itemsPerPage = 10;
@@ -390,7 +390,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void getAllBooks() {
-        String subjectURLPage = bookURL  + "?pageNumber=" + currentPage + "&pageSize=" + itemsPerPage;
+        String subjectURLPage = bookURL  + "&pageNumber=" + currentPage + "&pageSize=" + itemsPerPage;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, subjectURLPage, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -526,7 +526,9 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     Dialog drawerDialog;
-    LinearLayout layoutHome, layoutCart, layoutOrderHistory,layoutProfile,layoutOrderInBulk,layoutJoinAsAuthor, layoutLogout,layoutLogin, layoutShare, layoutAboutUs, layoutPrivacy, layoutTerms;
+    LinearLayout layoutHome, layoutCart, layoutOrderHistory,layoutProfile,layoutOrderInBulk,
+            layoutJoinAsAuthor, layoutLogout,layoutLogin, layoutShare, layoutAboutUs, layoutPrivacy,
+            layoutTerms,layoutEBook,layoutLibrary;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
     MaterialCardView cardBack;
@@ -550,6 +552,8 @@ public class DashboardActivity extends AppCompatActivity {
         layoutAboutUs = drawerDialog.findViewById(R.id.layoutAboutUs);
         layoutPrivacy = drawerDialog.findViewById(R.id.layoutPrivacy);
         layoutTerms = drawerDialog.findViewById(R.id.layoutTerms);
+        layoutEBook = drawerDialog.findViewById(R.id.layoutEBook);
+        layoutLibrary = drawerDialog.findViewById(R.id.layoutLibrary);
         txtUsername = drawerDialog.findViewById(R.id.txtUsername);
         txtUserEmail = drawerDialog.findViewById(R.id.txtUserEmail);
         cardBack = drawerDialog.findViewById(R.id.cardBack);
@@ -559,9 +563,17 @@ public class DashboardActivity extends AppCompatActivity {
         txtUserEmail.setText(sessionManager.getUserData().get("email"));
 
         if (sessionManager.IsLoggedIn()){
+            layoutLibrary.setVisibility(View.VISIBLE);
+            layoutCart.setVisibility(View.VISIBLE);
+            layoutOrderHistory.setVisibility(View.VISIBLE);
+            layoutProfile.setVisibility(View.VISIBLE);
             layoutLogin.setVisibility(View.GONE);
             layoutLogout.setVisibility(View.VISIBLE);
         }else {
+            layoutLibrary.setVisibility(View.GONE);
+            layoutCart.setVisibility(View.GONE);
+            layoutOrderHistory.setVisibility(View.GONE);
+            layoutProfile.setVisibility(View.GONE);
             layoutLogout.setVisibility(View.GONE);
             layoutLogin.setVisibility(View.VISIBLE);
         }
@@ -718,6 +730,20 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(DashboardActivity.this, JoinAsAuthorActivity.class);
+                startActivity(intent);
+            }
+        });
+        layoutEBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, EBookHomepageActivity.class);
+                startActivity(intent);
+            }
+        });
+        layoutLibrary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, EBookLibraryActivity.class);
                 startActivity(intent);
             }
         });

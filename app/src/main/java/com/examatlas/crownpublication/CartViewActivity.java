@@ -284,7 +284,9 @@ public class CartViewActivity extends AppCompatActivity {
 
     }
     Dialog drawerDialog;
-    LinearLayout layoutHome, layoutCart, layoutOrderHistory,layoutProfile,layoutOrderInBulk,layoutJoinAsAuthor, layoutLogout,layoutLogin, layoutShare, layoutAboutUs, layoutPrivacy, layoutTerms;
+    LinearLayout layoutHome, layoutCart, layoutOrderHistory,layoutProfile,layoutOrderInBulk,
+            layoutJoinAsAuthor, layoutLogout,layoutLogin, layoutShare, layoutAboutUs, layoutPrivacy,
+            layoutTerms,layoutEBook,layoutLibrary;
     TextView txtUsername, txtUserEmail;
     CircleImageView imgUser;
     MaterialCardView cardBack;
@@ -308,6 +310,8 @@ public class CartViewActivity extends AppCompatActivity {
         layoutAboutUs = drawerDialog.findViewById(R.id.layoutAboutUs);
         layoutPrivacy = drawerDialog.findViewById(R.id.layoutPrivacy);
         layoutTerms = drawerDialog.findViewById(R.id.layoutTerms);
+        layoutEBook = drawerDialog.findViewById(R.id.layoutEBook);
+        layoutLibrary = drawerDialog.findViewById(R.id.layoutLibrary);
         txtUsername = drawerDialog.findViewById(R.id.txtUsername);
         txtUserEmail = drawerDialog.findViewById(R.id.txtUserEmail);
         cardBack = drawerDialog.findViewById(R.id.cardBack);
@@ -317,9 +321,17 @@ public class CartViewActivity extends AppCompatActivity {
         txtUserEmail.setText(sessionManager.getUserData().get("email"));
 
         if (sessionManager.IsLoggedIn()){
+            layoutLibrary.setVisibility(View.VISIBLE);
+            layoutCart.setVisibility(View.VISIBLE);
+            layoutOrderHistory.setVisibility(View.VISIBLE);
+            layoutProfile.setVisibility(View.VISIBLE);
             layoutLogin.setVisibility(View.GONE);
             layoutLogout.setVisibility(View.VISIBLE);
         }else {
+            layoutLibrary.setVisibility(View.GONE);
+            layoutCart.setVisibility(View.GONE);
+            layoutOrderHistory.setVisibility(View.GONE);
+            layoutProfile.setVisibility(View.GONE);
             layoutLogout.setVisibility(View.GONE);
             layoutLogin.setVisibility(View.VISIBLE);
         }
@@ -404,6 +416,20 @@ public class CartViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(CartViewActivity.this, TermsAndConditionActivity.class);
+                startActivity(intent);
+            }
+        });
+        layoutEBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CartViewActivity.this, EBookHomepageActivity.class);
+                startActivity(intent);
+            }
+        });
+        layoutLibrary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CartViewActivity.this, EBookLibraryActivity.class);
                 startActivity(intent);
             }
         });

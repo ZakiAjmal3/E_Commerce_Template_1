@@ -43,6 +43,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.examatlas.crownpublication.Adapter.extraAdapter.BookImageAdapter;
 import com.examatlas.crownpublication.CartViewActivity;
 import com.examatlas.crownpublication.DashboardActivity;
+import com.examatlas.crownpublication.EBookHomepageActivity;
 import com.examatlas.crownpublication.LoginActivity;
 import com.examatlas.crownpublication.MainActivity;
 import com.examatlas.crownpublication.Models.DashboardModel;
@@ -236,8 +237,15 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
                                         new Handler().postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
-                                                ((DashboardActivity) context).setCartItemCountTxt();
-                                                progressDialog.dismiss();
+                                                if (context instanceof DashboardActivity) {
+                                                    ((DashboardActivity) context).setCartItemCountTxt();
+                                                    progressDialog.dismiss();
+                                                }else {
+                                                    if (context instanceof EBookHomepageActivity){
+                                                        ((EBookHomepageActivity) context).setCartItemCountTxt();
+                                                        progressDialog.dismiss();
+                                                    }
+                                                }
                                             }
                                         }, 1000);
                                     } catch (JSONException e) {

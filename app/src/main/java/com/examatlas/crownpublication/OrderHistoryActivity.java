@@ -278,11 +278,12 @@ public class OrderHistoryActivity extends AppCompatActivity {
                                         JSONObject jsonObject4 = jsonObject3.getJSONObject("product");
 
                                         String bookId = jsonObject4.getString("_id");
+                                        String bookType = jsonObject4.getString("type");
                                         String title = jsonObject4.getString("title"); // Correct field
                                         String sellPrice = jsonObject4.getString("sellingPrice");
                                         String quantity = jsonObject3.getString("quantity");
 
-                                        OrderItemsArrayListModel orderItemsArrayListModel = new OrderItemsArrayListModel(bookId, title, sellPrice, quantity);
+                                        OrderItemsArrayListModel orderItemsArrayListModel = new OrderItemsArrayListModel(bookId, title,bookType, sellPrice, quantity);
                                         orderItemsArrayListModelArrayList.add(orderItemsArrayListModel);
                                     }
                                     String razorpayOrderId = jsonObject1.getJSONObject("payment").getString("razorpayOrderId");

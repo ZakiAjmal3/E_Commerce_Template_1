@@ -1,13 +1,22 @@
 package com.examatlas.crownpublication.Models.extraModels;
 
 public class OrderItemsArrayListModel {
-    String bookId,title,sellPrice,quantity;
+    String bookId,title,bookType,sellPrice,quantity;
 
-    public OrderItemsArrayListModel(String bookId, String title, String sellPrice, String quantity) {
+    public OrderItemsArrayListModel(String bookId, String title, String bookType, String sellPrice, String quantity) {
         this.bookId = bookId;
         this.title = title;
+        this.bookType = bookType;
         this.sellPrice = sellPrice;
         this.quantity = quantity;
+    }
+
+    public String getBookType() {
+        return bookType;
+    }
+
+    public void setBookType(String bookType) {
+        this.bookType = bookType;
     }
 
     public String getBookId() {
